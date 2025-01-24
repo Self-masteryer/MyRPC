@@ -2,11 +2,12 @@ package com.lcx.consumer;
 
 import com.lcx.common.model.User;
 import com.lcx.common.service.IUserService;
+import com.lcx.extend.proxy.ServiceProxyFactory;
 
 public class ConsumerApplication {
     public static void main(String[] args) {
-        // 动态代理:尚未完善
-        IUserService userService = null;
+        // 动态代理
+        IUserService userService = ServiceProxyFactory.getProxy(IUserService.class);
         User user = new User();
         user.setName("lcx");
         // 调用服务

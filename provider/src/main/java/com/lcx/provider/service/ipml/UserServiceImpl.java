@@ -1,4 +1,4 @@
-package com.lcx.common.service.impl;
+package com.lcx.provider.service.ipml;
 
 import com.lcx.common.model.User;
 import com.lcx.common.service.IUserService;

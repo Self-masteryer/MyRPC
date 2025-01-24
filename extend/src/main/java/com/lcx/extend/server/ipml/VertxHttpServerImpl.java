@@ -1,5 +1,6 @@
 package com.lcx.extend.server.ipml;
 
+import com.lcx.extend.server.HttpServerHandler;
 import com.lcx.extend.server.IHttpServer;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
@@ -16,16 +17,8 @@ public class VertxHttpServerImpl implements IHttpServer {
         Vertx vertx = Vertx.vertx();
         // 创建http服务器
         HttpServer httpServer = vertx.createHttpServer();
-
-        // 监听端口并处理请求
-        httpServer.requestHandler(req -> {
-            // 处理HTTP请求
-            log.info("Received request: {} {}", req.method(), req.uri());
-            // 响应请求
-            req.response()
-                    .putHeader("content-type", "text/plain")
-                    .end("Hello HttpServer from Vert.x!");
-        });
+        // 设置处理器
+        httpServer.requestHandler(new HttpServerHandler());
         // 启动服务器并监听指定端口
         httpServer.listen(port, res -> {
             if (res.succeeded()) {

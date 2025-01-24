@@ -13,11 +13,11 @@ public class LocalRegister {
 
     /**
      * 注册服务
-     * @param interfaceName 服务名称
-     * @param implClass 服务实例class类
+     * @param serviceName 服务名称
+     * @param clazz 服务实例class类
      */
-    public static void register(String interfaceName,Class<?> implClass){
-        map.put(interfaceName,implClass);
+    public static void register(String serviceName,Class<?> clazz){
+        map.put(serviceName,clazz);
     }
 
     /**
