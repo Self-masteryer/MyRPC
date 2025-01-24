@@ -1,4 +1,4 @@
-package com.lcx.extend.register;
+package com.lcx.rpc_core.register;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

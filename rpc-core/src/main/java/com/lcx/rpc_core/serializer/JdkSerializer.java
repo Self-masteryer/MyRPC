@@ -1,4 +1,4 @@
-package com.lcx.extend.serializer;
+package com.lcx.rpc_core.serializer;
 
 import java.io.*;
 /**

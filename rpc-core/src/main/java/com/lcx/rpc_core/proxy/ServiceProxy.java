@@ -1,12 +1,12 @@
-package com.lcx.extend.proxy;
+package com.lcx.rpc_core.proxy;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
-import com.lcx.extend.model.RpcRequest;
-import com.lcx.extend.model.RpcResponse;
-import com.lcx.extend.serializer.JdkSerializer;
+import com.lcx.rpc_core.model.RpcRequest;
+import com.lcx.rpc_core.model.RpcResponse;
+import com.lcx.rpc_core.serializer.JdkSerializer;
 
 import java.io.IOException;
 
@@ -29,7 +29,7 @@ public class ServiceProxy implements InvocationHandler {
             // 序列化
             byte[] bodyBytes = serializer.serialize(rpcRequest);
             // 发送请求
-            // ，这里地址被硬编码了（需要使用注册中心和服务发现机制解决）
+            // 硬编码（需要使用注册中心和服务发现机制解决）
             try (HttpResponse httpResponse = HttpRequest.post("http://localhost:8080")
                     .body(bodyBytes)
                     .execute()) {

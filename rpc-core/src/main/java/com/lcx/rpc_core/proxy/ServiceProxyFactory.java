@@ -1,4 +1,4 @@
-package com.lcx.extend.proxy;
+package com.lcx.rpc_core.proxy;
  
 import java.lang.reflect.Proxy;
  

@@ -1,4 +1,4 @@
-package com.lcx.extend.model;
+package com.lcx.rpc_core.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

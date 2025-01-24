@@ -2,7 +2,7 @@ package com.lcx.consumer;
 
 import com.lcx.common.model.User;
 import com.lcx.common.service.IUserService;
-import com.lcx.extend.proxy.ServiceProxyFactory;
+import com.lcx.rpc_core.proxy.ServiceProxyFactory;
 
 public class ConsumerApplication {
     public static void main(String[] args) {
