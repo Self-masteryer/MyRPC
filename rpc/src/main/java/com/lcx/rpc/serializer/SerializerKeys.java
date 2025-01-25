@@ -3,9 +3,9 @@ package com.lcx.rpc.serializer;
 /**
  * 序列化器常量
  */
-public interface SerializerKeys {
-    String JDK = "jdk";
-    String KRYO = "kryo";
-    String JSON = "json";
-    String HESSIAN = "hessian";
+public final class SerializerKeys {
+    public static final String JDK = "jdk";
+    public static final String KRYO = "kryo";
+    public static final String JSON = "json";
+    public static final String HESSIAN = "hessian";
 }

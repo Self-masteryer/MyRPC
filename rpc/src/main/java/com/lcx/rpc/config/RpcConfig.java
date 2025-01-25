@@ -32,7 +32,7 @@ public class RpcConfig {
     /**
      * mock
      */
-    private boolean mock = true;
+    private boolean mock = false;
 
     /**
      * 序列化器
@@ -40,7 +40,7 @@ public class RpcConfig {
     private String serializer = SerializerKeys.KRYO;
 
     /**
-     * 注册中心配置
+     * 注册中心
      */
-    private RegisterConfig register = new RegisterConfig();
+    private RegistryConfig registry = new RegistryConfig();
 }

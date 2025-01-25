@@ -3,6 +3,7 @@ package com.lcx.rpc.utils;
 import cn.hutool.core.io.resource.ResourceUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.setting.dialect.Props;
+import cn.hutool.setting.yaml.YamlUtil;
 
 import java.util.Objects;
 
@@ -13,16 +14,20 @@ public class ConfigUtils {
 
     private static final String[] SUFFIXES = {".properties", ".yml", ".yaml"};
 
-    public static <T> T loadConfig(Class<T> clazz,String prefix){
-        return loadConfig(clazz,prefix,"");
+    public static <T> T loadConfig(Class<T> clazz, String prefix) {
+        return loadConfig(clazz, prefix, "");
     }
 
     public static <T> T loadConfig(Class<T> clazz, String prefix, String env) {
         Objects.requireNonNull(clazz, "Config class must not be null");
         try {
             String fileName = buildConfigFileName(env);
-            Props props = new Props(fileName);
-            return props.toBean(clazz, prefix);
+            if (fileName.endsWith(".properties")) {
+                Props props = new Props(fileName);
+                return props.toBean(clazz, prefix);
+            } else {
+                return YamlUtil.loadByPath(fileName, clazz);
+            }
         } catch (Exception e) {
             throw new IllegalStateException("Load config failed: " + env, e);
         }

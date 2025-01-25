@@ -1,6 +1,6 @@
 package com.lcx.rpc.register;
 
-import com.lcx.rpc.config.RegisterConfig;
+import com.lcx.rpc.config.RegistryConfig;
 import com.lcx.rpc.model.ServiceMetaInfo;
 
 import java.util.List;
@@ -8,12 +8,12 @@ import java.util.List;
 /**
  * 注册中心
  */
-public interface Register {
+public interface Registry {
 
     /**
      * 初始化
      */
-    void init(RegisterConfig registerConfig);
+    void init(RegistryConfig registryConfig);
 
     /**
      * 注册服务(服务端)

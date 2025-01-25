@@ -16,39 +16,51 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <hutool.version>5.8.26</hutool.version>
+        <vertx.version>4.5.12</vertx.version>
+        <hessian.version>4.0.66</hessian.version>
+        <kryo.version>5.6.0</kryo.version>
+        <jackson-databind.version>2.15.3</jackson-databind.version>
+        <jetcd.version>0.8.4</jetcd.version>
+        <snakeyaml.version>2.3</snakeyaml.version>
     </properties>
 
     <dependencies>
 
+        <!-- snakeyaml解析器 -->
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>2.3</version>
+        </dependency>
         <!-- etcd java客户端 -->
         <dependency>
             <groupId>io.etcd</groupId>
             <artifactId>jetcd-core</artifactId>
-            <version>0.7.7</version>
+            <version>${jetcd.version}</version>
         </dependency>
         <!-- 序列化 -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.15.3</version>
+            <version>${jackson-databind.version}</version>
         </dependency>
         <dependency>
             <groupId>com.esotericsoftware</groupId>
             <artifactId>kryo</artifactId>
-            <version>5.6.0</version>
+            <version>${kryo.version}</version>
         </dependency>
         <dependency>
             <groupId>com.caucho</groupId>
             <artifactId>hessian</artifactId>
-            <version>4.0.66</version>
+            <version>${hessian.version}</version>
         </dependency>
-        <!-- 引入vertx web服务器 -->
+        <!-- vertx web服务器 -->
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
-            <version>4.4.0</version>
+            <version>${vertx.version}</version>
         </dependency>
-        <!-- 引入hutool工具包 -->
+        <!-- hutool工具包 -->
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>

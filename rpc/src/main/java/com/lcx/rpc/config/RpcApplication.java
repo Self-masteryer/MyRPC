@@ -1,40 +1,35 @@
 package com.lcx.rpc.config;
 
 import com.lcx.rpc.utils.ConfigUtils;
+import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Data
 public class RpcApplication {
 
-    private static volatile RpcConfig rpcConfig;
+    private RpcConfig rpc;
+    private static volatile RpcApplication rpcApplication;
     private static final Logger log = LoggerFactory.getLogger(RpcApplication.class);
 
     public static RpcConfig getRpcConfig() {
-        if(rpcConfig == null) {
+        if (rpcApplication == null) {
             synchronized (RpcApplication.class) {
-                if(rpcConfig == null) {
+                if (rpcApplication == null) {
                     init();
                 }
             }
         }
-        return rpcConfig;
+        return rpcApplication.getRpc();
     }
 
     private static void init() {
-        RpcConfig newRpcConfig = null;
         try {
             // 加载配置文件
-            newRpcConfig = ConfigUtils.loadConfig(RpcConfig.class, "");
+            RpcApplication.rpcApplication = ConfigUtils.loadConfig(RpcApplication.class, "");
         } catch (Exception e) {
             // 加载失败，采用默认值
-            rpcConfig = new RpcConfig();
+            RpcApplication.rpcApplication = new RpcApplication();
         }
-        init(newRpcConfig);
     }
-
-    private static void init(RpcConfig rpcConfig) {
-        RpcApplication.rpcConfig = rpcConfig;
-        log.info("rpc config:{}", rpcConfig);
-    }
-
 }

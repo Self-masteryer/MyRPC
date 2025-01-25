@@ -1,0 +1,11 @@
+rpc:
+  name: MyRPC+
+  version: 2.0.0
+  mock: false
+  serializer: kryo
+  registry:
+    type: etcd
+    address: "http://localhost:2379"
+    timeout: 5000
+    leaseTime: 30
+
