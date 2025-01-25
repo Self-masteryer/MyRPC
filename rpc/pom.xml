@@ -20,7 +20,13 @@
 
     <dependencies>
 
-        <!--序列化-->
+        <!-- etcd java客户端 -->
+        <dependency>
+            <groupId>io.etcd</groupId>
+            <artifactId>jetcd-core</artifactId>
+            <version>0.7.7</version>
+        </dependency>
+        <!-- 序列化 -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -36,13 +42,13 @@
             <artifactId>hessian</artifactId>
             <version>4.0.66</version>
         </dependency>
-        <!--引入vertx web服务器-->
+        <!-- 引入vertx web服务器 -->
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
             <version>4.4.0</version>
         </dependency>
-        <!--引入hutool工具包-->
+        <!-- 引入hutool工具包 -->
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>

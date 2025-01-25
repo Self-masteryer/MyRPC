@@ -37,5 +37,10 @@ public class RpcConfig {
     /**
      * 序列化器
      */
-    private String serializer = SerializerKeys.JDK;
+    private String serializer = SerializerKeys.KRYO;
+
+    /**
+     * 注册中心配置
+     */
+    private RegisterConfig register = new RegisterConfig();
 }
