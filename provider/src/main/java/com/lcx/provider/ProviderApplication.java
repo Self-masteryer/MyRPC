@@ -1,10 +1,10 @@
 package com.lcx.provider;
 
-import com.lcx.rpc_core.config.RpcApplication;
-import com.lcx.rpc_core.config.RpcConfig;
+import com.lcx.rpc.config.RpcApplication;
+import com.lcx.rpc.config.RpcConfig;
 import com.lcx.common.service.IUserService;
-import com.lcx.rpc_core.register.LocalRegister;
-import com.lcx.rpc_core.server.ipml.VertxHttpServerImpl;
+import com.lcx.rpc.register.LocalRegister;
+import com.lcx.rpc.server.ipml.VertxHttpServerImpl;
 import com.lcx.provider.service.ipml.UserServiceImpl;
 
 public class ProviderApplication {
