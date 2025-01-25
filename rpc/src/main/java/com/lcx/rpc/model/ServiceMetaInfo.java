@@ -5,15 +5,25 @@ import lombok.Data;
 
 @Data
 public class ServiceMetaInfo {
-    // 服务名称
+    /**
+     * 服务名称
+     */
     private String serviceName;
-    // 服务版本
+    /**
+     * 服务版本
+     */
     private String serviceVersion = "1.0.0";
-    // 服务地址
+    /**
+     * 服务地址
+     */
     private String serviceHost;
-    // 服务端口
+    /**
+     * 服务端口
+     */
     private Integer servicePort;
-    // 服务分组
+    /**
+     * 服务分组
+     */
     private String serviceGroup = "default";
 
     /**
