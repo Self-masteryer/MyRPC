@@ -1,7 +1,8 @@
 package com.lcx.rpc.register;
 
 import cn.hutool.json.JSONUtil;
-import com.lcx.rpc.config.RegisterConfig;
+import com.lcx.rpc.config.RegistryConfig;
+import com.lcx.rpc.config.RpcApplication;
 import com.lcx.rpc.model.ServiceMetaInfo;
 import io.etcd.jetcd.*;
 import io.etcd.jetcd.options.GetOption;
@@ -11,28 +12,32 @@ import lombok.extern.slf4j.Slf4j;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * etcd注册中心实现类
  */
 @Slf4j
-public class EtcdRegistry implements Register {
+public class EtcdRegistry implements Registry {
 
     private Client client;
     private KV kvClient;
     // etcd的根节点
     private static final String ETCD_ROOT_PATH = "/rpc/";
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
     /**
      * 连接etcd服务器，获得java客户端
      *
-     * @param registerConfig 注册中心配置信息
+     * @param registryConfig 注册中心配置信息
      */
     @Override
-    public void init(RegisterConfig registerConfig) {
+    public void init(RegistryConfig registryConfig) {
         client = Client.builder()
-                .endpoints(registerConfig.getAddress())
-                .connectTimeout(Duration.ofMillis(registerConfig.getTimeout()))
+                .endpoints(registryConfig.getAddress())
+                .connectTimeout(Duration.ofMillis(registryConfig.getTimeout()))
                 .build();
         kvClient = client.getKVClient();
     }
@@ -43,23 +48,33 @@ public class EtcdRegistry implements Register {
      */
     @Override
     public void register(ServiceMetaInfo serviceMetaInfo) throws Exception {
-        // 创建Lease和KV客户端
+        // 创建租约
         Lease leaseClient = client.getLeaseClient();
-        // 创建一个30秒租约
-        long leaseId = leaseClient.grant(30).get().getID();
+        Integer leaseTime = RpcApplication.getRpcConfig().getRegistry().getLeaseTime();
+        long leaseId = leaseClient.grant(leaseTime).get().getID();
+
+        // 启动租约续期定时任务
+        scheduler.scheduleAtFixedRate(() -> {
+            try {
+                leaseClient.keepAliveOnce(leaseId);
+            } catch (Exception e) {
+                log.error("Failed to renew lease for service: {}", serviceMetaInfo.getServiceKey(), e);
+            }
+        }, leaseTime - 5, leaseTime - 5, TimeUnit.SECONDS);  // 提前5秒续期
+
         // 设置要存储的键值对
         String key = ETCD_ROOT_PATH + serviceMetaInfo.getServiceKey();
         ByteSequence keyByteSequence = ByteSequence.from(key, StandardCharsets.UTF_8);
         ByteSequence valueByteSequence = ByteSequence.from(JSONUtil.toJsonStr(serviceMetaInfo), StandardCharsets.UTF_8);
-        // 将键值对与租约关联，30秒后过期
+        // 将键值对与租约关联
         PutOption putOption = PutOption.builder().withLeaseId(leaseId).build();
         kvClient.put(keyByteSequence, valueByteSequence, putOption).get();
     }
 
-
     @Override
     public void unregister(ServiceMetaInfo serviceMetaInfo) throws Exception {
         kvClient.delete(ByteSequence.from(ETCD_ROOT_PATH + serviceMetaInfo.getServiceNodeKey(), StandardCharsets.UTF_8));
+        scheduler.shutdown();
     }
 
     @Override
@@ -79,10 +94,10 @@ public class EtcdRegistry implements Register {
     @Override
     public void destroy() {
         log.info("当前节点下线");
-        if (client != null){
+        if (client != null) {
             client.close();
         }
-        if (kvClient != null){
+        if (kvClient != null) {
             kvClient.close();
         }
     }
