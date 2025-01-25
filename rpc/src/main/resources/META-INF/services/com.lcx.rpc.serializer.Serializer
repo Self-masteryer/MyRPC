@@ -1,0 +1,2 @@
+com.lcx.rpc.serializer.KryoSerializer
+com.lcx.rpc.serializer.HessianSerializer
