@@ -4,10 +4,11 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpResponse;
+import com.lcx.rpc_core.config.RpcApplication;
 import com.lcx.rpc_core.model.RpcRequest;
 import com.lcx.rpc_core.model.RpcResponse;
-import com.lcx.rpc_core.serializer.JdkSerializer;
-
+import com.lcx.rpc_core.serializer.Serializer;
+import com.lcx.rpc_core.serializer.SerializerFactory;
 import java.io.IOException;
 
 /**
@@ -16,8 +17,8 @@ import java.io.IOException;
 public class ServiceProxy implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        // 指定序列化器
-        JdkSerializer serializer = new JdkSerializer();
+        // 获取配置的序列化器
+        Serializer serializer = SerializerFactory.getSerializer(RpcApplication.getRpcConfig().getSerializer());
         // 构造请求
         RpcRequest rpcRequest = RpcRequest.builder()
                 .serviceName(method.getDeclaringClass().getName())
@@ -28,8 +29,7 @@ public class ServiceProxy implements InvocationHandler {
         try {
             // 序列化
             byte[] bodyBytes = serializer.serialize(rpcRequest);
-            // 发送请求
-            // 硬编码（需要使用注册中心和服务发现机制解决）
+            // 发送请求 todo 使用注册中心和服务发现
             try (HttpResponse httpResponse = HttpRequest.post("http://localhost:8080")
                     .body(bodyBytes)
                     .execute()) {

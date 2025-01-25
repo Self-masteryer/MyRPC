@@ -1,9 +1,11 @@
 package com.lcx.rpc_core.server;
 
+import com.lcx.rpc_core.config.RpcApplication;
 import com.lcx.rpc_core.model.RpcRequest;
 import com.lcx.rpc_core.model.RpcResponse;
 import com.lcx.rpc_core.register.LocalRegister;
-import com.lcx.rpc_core.serializer.JdkSerializer;
+import com.lcx.rpc_core.serializer.Serializer;
+import com.lcx.rpc_core.serializer.SerializerFactory;
 import com.lcx.rpc_core.server.ipml.VertxHttpServerImpl;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
@@ -21,7 +23,7 @@ public class HttpServerHandler  implements Handler<HttpServerRequest> {
 
     @Override
     public void handle(HttpServerRequest request) {
-        final JdkSerializer serializer = new JdkSerializer();
+        final Serializer serializer = SerializerFactory.getSerializer(RpcApplication.getRpcConfig().getSerializer());
         log.info("Receive request:{} {}", request.method(), request.uri());
         request.bodyHandler(body -> {
             byte[] bytes = body.getBytes();
@@ -58,7 +60,7 @@ public class HttpServerHandler  implements Handler<HttpServerRequest> {
 
     }
 
-    private void doResponse(HttpServerRequest request, RpcResponse rpcResponse, JdkSerializer serializer) {
+    private void doResponse(HttpServerRequest request, RpcResponse rpcResponse, Serializer serializer) {
         HttpServerResponse response = request.response();
         response.putHeader("content-type", "application/json");
         try {
