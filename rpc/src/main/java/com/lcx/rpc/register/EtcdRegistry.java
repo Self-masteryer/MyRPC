@@ -1,6 +1,5 @@
 package com.lcx.rpc.register;
 
-import cn.hutool.cron.CronUtil;
 import cn.hutool.json.JSONUtil;
 import com.lcx.rpc.config.RegistryConfig;
 import com.lcx.rpc.config.RpcApplication;
@@ -113,7 +112,7 @@ public class EtcdRegistry implements Registry {
     }
 
     @Override
-    public void unregister(ServiceMetaInfo serviceMetaInfo) throws Exception {
+    public void unRegister(ServiceMetaInfo serviceMetaInfo) throws Exception {
         kvClient.delete(ByteSequence.from(ETCD_ROOT_PATH + serviceMetaInfo.getServiceNodeKey(), StandardCharsets.UTF_8));
         Long leaseId = leaseIdMap.get(serviceMetaInfo.getServiceNodeKey());
         leaseClient.revoke(leaseId).get(); // 撤销续约

@@ -29,7 +29,7 @@ public interface Registry {
      * @param serviceMetaInfo 服务节点元数据
      * @throws Exception 异常
      */
-    void unregister(ServiceMetaInfo serviceMetaInfo) throws Exception;
+    void unRegister(ServiceMetaInfo serviceMetaInfo) throws Exception;
 
     /**
      * 服务发现

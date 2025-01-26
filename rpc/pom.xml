@@ -22,10 +22,17 @@
         <jackson-databind.version>2.15.3</jackson-databind.version>
         <jetcd.version>0.8.4</jetcd.version>
         <snakeyaml.version>2.3</snakeyaml.version>
+        <curator.version>5.7.1</curator.version>
     </properties>
 
     <dependencies>
 
+        <!-- curator-x-discovery -->
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-x-discovery</artifactId>
+            <version>${curator.version}</version>
+        </dependency>
         <!-- snakeyaml解析器 -->
         <dependency>
             <groupId>org.yaml</groupId>
