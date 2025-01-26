@@ -3,7 +3,7 @@ package com.lcx.rpc.register;
 import com.lcx.rpc.config.RegistryConfig;
 import com.lcx.rpc.model.ServiceMetaInfo;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * 注册中心
@@ -16,32 +16,39 @@ public interface Registry {
     void init(RegistryConfig registryConfig);
 
     /**
-     * 注册服务(服务端)
+     * 注册服务
      *
-     * @param serviceMetaInfo 服务元数据
+     * @param serviceMetaInfo 服务节点元数据
      * @throws Exception 异常
      */
     void register(ServiceMetaInfo serviceMetaInfo) throws Exception;
 
     /**
-     * 注销服务(服务端)
+     * 注销服务
      *
-     * @param serviceMetaInfo 服务元数据
+     * @param serviceMetaInfo 服务节点元数据
      * @throws Exception 异常
      */
     void unregister(ServiceMetaInfo serviceMetaInfo) throws Exception;
 
     /**
-     * 服务发现(服务端)
+     * 服务发现
      *
      * @param serviceKey 服务键
-     * @return 服务元数据
+     * @return 服务节点元数据
      * @throws Exception 异常
      */
-    List<ServiceMetaInfo> serviceDiscovery(String serviceKey) throws Exception;
+    Collection<ServiceMetaInfo> serviceDiscovery(String serviceKey) throws Exception;
 
     /**
-     * 服务销毁
+     * 监控服务，维护缓存
+     *
+     * @param serviceKey 服务前缀键
+     */
+    void watch(String serviceKey);
+
+    /**
+     * 服务销毁，关闭资源
      */
     void destroy();
 }

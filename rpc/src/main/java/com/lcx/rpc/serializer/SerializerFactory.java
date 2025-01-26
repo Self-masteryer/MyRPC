@@ -1,5 +1,6 @@
 package com.lcx.rpc.serializer;
 
+import com.lcx.rpc.config.RpcApplication;
 import com.lcx.rpc.spi.SpiLoader;
 
 /**
@@ -12,9 +13,9 @@ public class SerializerFactory {
     }
 
     /**
-     * 默认序列化器
+     * 配置的序列化器
      */
-    private static final Serializer DEFAULT_SERIALIZER = SpiLoader.getInstance(Serializer.class, SerializerKeys.JDK);
+    public static final Serializer serializer = getSerializer(RpcApplication.getRpcConfig().getSerializer());
 
     /**
      * 获取实例

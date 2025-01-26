@@ -1,9 +1,9 @@
 rpc:
   env: dev
-  name: consumer
+  name: IUserService
   version: 1.0.0
   host: 127.0.0.1
-  port: 8080
+  port: 8081
   weight: 1
   mock: false
   serializer: kryo
