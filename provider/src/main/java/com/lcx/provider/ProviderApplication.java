@@ -4,7 +4,7 @@ import com.lcx.provider.service.ipml.UserServiceImpl;
 import com.lcx.rpc.config.RpcApplication;
 import com.lcx.rpc.config.RpcConfig;
 import com.lcx.rpc.register.LocalRegister;
-import com.lcx.rpc.server.ipml.VertxHttpServerImpl;
+import com.lcx.rpc.server.tcp.VertxTcpServer;
 
 public class ProviderApplication {
 
@@ -12,7 +12,7 @@ public class ProviderApplication {
         RpcConfig rpcConfig = RpcApplication.getRpcConfig();
         LocalRegister.register(rpcConfig.getName(), UserServiceImpl.class);
         // 提供服务
-        VertxHttpServerImpl vertxHttpServer = new VertxHttpServerImpl();
-        vertxHttpServer.doStart(rpcConfig.getPort());
+        VertxTcpServer vertxTcpServer = new VertxTcpServer();
+        vertxTcpServer.doStart(rpcConfig.getPort());
     }
 }

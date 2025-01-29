@@ -1,4 +1,4 @@
-package com.lcx.rpc.server;
+package com.lcx.rpc.server.handler;
 
 import com.lcx.rpc.config.RpcApplication;
 import com.lcx.rpc.model.RpcRequest;
@@ -6,20 +6,19 @@ import com.lcx.rpc.model.RpcResponse;
 import com.lcx.rpc.register.LocalRegister;
 import com.lcx.rpc.serializer.Serializer;
 import com.lcx.rpc.serializer.SerializerFactory;
-import com.lcx.rpc.server.ipml.VertxHttpServerImpl;
+
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
-public class HttpServerHandler  implements Handler<HttpServerRequest> {
-
-    private static final org.slf4j.Logger log = LoggerFactory.getLogger(VertxHttpServerImpl.class.getName());
+@Slf4j
+public class HttpServerHandler implements Handler<HttpServerRequest> {
 
     @Override
     public void handle(HttpServerRequest request) {

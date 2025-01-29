@@ -1,15 +1,15 @@
-package com.lcx.rpc.server.ipml;
+package com.lcx.rpc.server.http;
 
-import com.lcx.rpc.server.HttpServerHandler;
-import com.lcx.rpc.server.IHttpServer;
+import com.lcx.rpc.server.handler.HttpServerHandler;
+import com.lcx.rpc.server.IRpcServer;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class VertxHttpServerImpl implements IHttpServer {
+public class VertxHttpServer implements IRpcServer {
 
-    private static final Logger log = LoggerFactory.getLogger(VertxHttpServerImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(VertxHttpServer.class);
 
     @Override
     public void doStart(int port) {
