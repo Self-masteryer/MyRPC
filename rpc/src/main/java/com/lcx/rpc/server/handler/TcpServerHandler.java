@@ -7,6 +7,7 @@ import com.lcx.rpc.protocol.ProtocolMessageDecoder;
 import com.lcx.rpc.protocol.ProtocolMessageEncoder;
 import com.lcx.rpc.protocol.enums.ProtocolMessageTypeEnum;
 import com.lcx.rpc.register.LocalRegister;
+import com.lcx.rpc.server.tcp.TcpBufferHandlerWrapper;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetSocket;
@@ -19,7 +20,7 @@ public class TcpServerHandler implements Handler<NetSocket> {
 
     @Override
     public void handle(NetSocket netSocket) {
-        netSocket.handler(buffer -> {
+        netSocket.handler(new TcpBufferHandlerWrapper(buffer -> {
             ProtocolMessage<RpcRequest> requestProtocolMessage;
             try {
                 requestProtocolMessage = (ProtocolMessage<RpcRequest>) ProtocolMessageDecoder.decode(buffer);
@@ -54,7 +55,7 @@ public class TcpServerHandler implements Handler<NetSocket> {
             } catch (Exception e) {
                 throw new RuntimeException("协议消息编码错误");
             }
-        });
+        }));
 
     }
 }

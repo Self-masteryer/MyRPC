@@ -13,6 +13,11 @@ public final class ProtocolConstant {
     public static final byte PROTOCOL_VERSION = 0x1;
 
     /**
+     * 消息体长度偏移量
+     */
+    public static final int MESSAGE_LENGTH_OFFSET =13;
+
+    /**
      * 消息头长度
      */
     public static final int MESSAGE_HEADER_LENGTH = 17;
