@@ -9,6 +9,7 @@ rpc:
   serializer: kryo
   loadBalancer: consistentHash
   retryStrategy: fixedInterval
+  tolerantStrategy: failFast;
   registry:
     type: etcd
     address: "http://localhost:2379"

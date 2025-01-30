@@ -7,6 +7,8 @@ import cn.hutool.core.collection.CollUtil;
 import com.lcx.rpc.config.RpcApplication;
 import com.lcx.rpc.fault.retry.RetryStrategy;
 import com.lcx.rpc.fault.retry.RetryStrategyFactory;
+import com.lcx.rpc.fault.tolerant.TolerantStrategy;
+import com.lcx.rpc.fault.tolerant.TolerantStrategyFactory;
 import com.lcx.rpc.loadbalancer.LoadBalancer;
 import com.lcx.rpc.loadbalancer.LoadBalancerFactory;
 import com.lcx.rpc.model.RpcRequest;
@@ -20,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * jdk动态代理
@@ -45,6 +48,8 @@ public class ServiceProxy implements InvocationHandler {
         Registry registry = RegistryFactory.registry;
         Collection<ServiceMetaInfo> serviceMetaInfoList = registry.serviceDiscovery(serviceMetaInfo.getServiceKey());
         if (CollUtil.isEmpty(serviceMetaInfoList)) {
+            // 打印日志
+            log.info("未发现服务：" + serviceMetaInfo.getServiceKey());
             throw new RuntimeException("未发现服务");
         }
 
@@ -54,10 +59,18 @@ public class ServiceProxy implements InvocationHandler {
 
         // 重试
         RetryStrategy retryStrategy = RetryStrategyFactory.retryStrategy;
-        RpcResponse response = retryStrategy.doRetry(() ->
-                VertxTcpClient.doRequest(rpcRequest, finalServiceMetaInfo)
-        );
-        return response.getData();
+        RpcResponse response = null;
+        try {
+            response = retryStrategy.doRetry(() ->
+                    VertxTcpClient.doRequest(rpcRequest, finalServiceMetaInfo)
+            );
+        } catch (Exception e) {
+            // 容错机制
+            TolerantStrategy tolerantStrategy = TolerantStrategyFactory.tolerantStrategy;
+            tolerantStrategy.doTolerant(null, e);
+        }
+
+        return Objects.requireNonNull(response).getData();
 //        // 基于http发送rpc请求
 //        HttpResponse httpResponse = HttpRequest.post(serviceMetaInfo.getServiceAddress())
 //                .body(bodyBytes)

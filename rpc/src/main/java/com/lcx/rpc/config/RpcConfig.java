@@ -1,6 +1,7 @@
 package com.lcx.rpc.config;
 
 import com.lcx.rpc.fault.retry.RetryStrategyKeys;
+import com.lcx.rpc.fault.tolerant.TolerantStrategyKeys;
 import com.lcx.rpc.loadbalancer.LoadBalancerKeys;
 import com.lcx.rpc.serializer.SerializerKeys;
 import lombok.Data;
@@ -51,6 +52,10 @@ public class RpcConfig {
      * 重试策略
      */
     private String retryStrategy = RetryStrategyKeys.NO;
+    /**
+     * 容错策略
+     */
+    private String tolerantStrategy = TolerantStrategyKeys.FAIL_BACK;
     /**
      * 注册中心
      */
