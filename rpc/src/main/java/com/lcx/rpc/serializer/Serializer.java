@@ -2,6 +2,9 @@ package com.lcx.rpc.serializer;
 
 import java.io.IOException;
 
+/**
+ * 序列化器
+ */
 public interface Serializer {
 
     /**

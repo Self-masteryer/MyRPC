@@ -8,6 +8,7 @@ import java.util.Map;
 /**
  * 负载均衡器：策略模式
  */
+@FunctionalInterface
 public interface LoadBalancer {
 
     /**
