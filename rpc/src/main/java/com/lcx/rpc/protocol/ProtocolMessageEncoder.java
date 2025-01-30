@@ -40,7 +40,7 @@ public class ProtocolMessageEncoder {
         // 序列化
         Serializer serializer = SerializerFactory.getSerializer(serializerEnum.getValue());
         byte[] body = serializer.serialize(msg.getBody());
-        // // 写入 body 长度和数据
+        // 写入 body 长度和数据
         buffer.appendInt(body.length);
         buffer.appendBytes(body);
         return buffer;
