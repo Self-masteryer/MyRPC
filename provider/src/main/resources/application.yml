@@ -7,6 +7,7 @@ rpc:
   weight: 1
   mock: false
   serializer: kryo
+  loadBalancer: consistentHash
   registry:
     type: etcd
     address: "http://localhost:2379"

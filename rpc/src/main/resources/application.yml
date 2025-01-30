@@ -1,8 +1,13 @@
 rpc:
+  env: dev
   name: MyRPC+
-  version: 2.0.0
+  version: 1.0.0
+  host: 127.0.0.1
+  port: 8081
+  weight: 1
   mock: false
   serializer: kryo
+  loadBalancer: consistentHash
   registry:
     type: etcd
     address: "http://localhost:2379"

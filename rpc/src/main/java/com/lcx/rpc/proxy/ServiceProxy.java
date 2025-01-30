@@ -5,6 +5,8 @@ import java.lang.reflect.Method;
 
 import cn.hutool.core.collection.CollUtil;
 import com.lcx.rpc.config.RpcApplication;
+import com.lcx.rpc.loadbalancer.LoadBalancer;
+import com.lcx.rpc.loadbalancer.LoadBalancerFactory;
 import com.lcx.rpc.model.RpcRequest;
 import com.lcx.rpc.model.RpcResponse;
 import com.lcx.rpc.model.ServiceMetaInfo;
@@ -13,7 +15,9 @@ import com.lcx.rpc.register.RegistryFactory;
 import com.lcx.rpc.server.tcp.VertxTcpClient;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * jdk动态代理
@@ -41,7 +45,10 @@ public class ServiceProxy implements InvocationHandler {
         if (CollUtil.isEmpty(serviceMetaInfoList)) {
             throw new RuntimeException("未发现服务");
         }
-        serviceMetaInfo = serviceMetaInfoList.iterator().next();
+
+        // 负载均衡
+        LoadBalancer loadBalancer = LoadBalancerFactory.loadBalancer;
+        serviceMetaInfo = loadBalancer.select(Map.of("methodName", method.getName()), new ArrayList<>(serviceMetaInfoList));
 
         RpcResponse response = VertxTcpClient.doRequest(rpcRequest, serviceMetaInfo);
         return response.getData();

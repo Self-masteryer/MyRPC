@@ -1,10 +1,12 @@
 package com.lcx.rpc.spi;
 
 import cn.hutool.core.io.resource.ResourceUtil;
+import com.lcx.rpc.loadbalancer.LoadBalancer;
+import com.lcx.rpc.register.Registry;
 import com.lcx.rpc.serializer.Serializer;
 import lombok.extern.slf4j.Slf4j;
+
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.HashMap;
@@ -51,7 +53,10 @@ public class SpiLoader {
     /**
      * 动态加载的类列表
      */
-    private static final List<Class<?>> LOAD_CLASS_LIST = List.of(Serializer.class);
+    private static final List<Class<?>> LOAD_CLASS_LIST = List.of(
+            Serializer.class,
+            Registry.class,
+            LoadBalancer.class);
 
     /**
      * 加载所有类型
@@ -102,8 +107,8 @@ public class SpiLoader {
      * 获取某个接口的实例
      *
      * @param interfaceClass 接口字节码对象
-     * @param key 键
-     * @param <T> 实现类
+     * @param key            键
+     * @param <T>            实现类
      * @return 实现类
      */
     public static <T> T getInstance(Class<?> interfaceClass, String key) {
