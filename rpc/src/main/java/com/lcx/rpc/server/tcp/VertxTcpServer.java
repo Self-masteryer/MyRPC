@@ -1,11 +1,11 @@
 package com.lcx.rpc.server.tcp;
 
-import com.lcx.rpc.server.IRpcServer;
+import com.lcx.rpc.server.RpcServer;
 import com.lcx.rpc.server.handler.TcpServerHandler;
 import io.vertx.core.Vertx;
 import io.vertx.core.net.NetServer;
 
-public class VertxTcpServer implements IRpcServer {
+public class VertxTcpServer implements RpcServer {
 
     public static void main(String[] args) {
         VertxTcpServer vertxTcpServer = new VertxTcpServer();

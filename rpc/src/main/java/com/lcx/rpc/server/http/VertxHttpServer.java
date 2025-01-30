@@ -1,13 +1,13 @@
 package com.lcx.rpc.server.http;
 
+import com.lcx.rpc.server.RpcServer;
 import com.lcx.rpc.server.handler.HttpServerHandler;
-import com.lcx.rpc.server.IRpcServer;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class VertxHttpServer implements IRpcServer {
+public class VertxHttpServer implements RpcServer {
 
     private static final Logger log = LoggerFactory.getLogger(VertxHttpServer.class);
 

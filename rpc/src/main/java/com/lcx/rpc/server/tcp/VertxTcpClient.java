@@ -52,7 +52,7 @@ public class VertxTcpClient {
                         .version(ProtocolConstant.PROTOCOL_VERSION)
                         .serializer((byte) Objects.requireNonNull(ProtocolMessageSerializerEnum
                                         .getByValue(RpcApplication.getRpcConfig().getSerializer()))
-                                .getKey())
+                                        .getKey())
                         .type((byte) ProtocolMessageTypeEnum.REQUEST.getValue())
                         .requestId(IdUtil.getSnowflakeNextId())
                         .build();
