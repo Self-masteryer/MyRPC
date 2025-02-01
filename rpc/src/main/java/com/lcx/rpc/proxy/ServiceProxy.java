@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 
 import cn.hutool.core.collection.CollUtil;
 import com.lcx.rpc.config.RpcApplication;
+import com.lcx.rpc.config.RpcConfig;
 import com.lcx.rpc.fault.retry.RetryStrategy;
 import com.lcx.rpc.fault.retry.RetryStrategyFactory;
 import com.lcx.rpc.fault.tolerant.TolerantStrategy;
@@ -22,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * jdk动态代理
@@ -31,8 +31,9 @@ import java.util.Objects;
 public class ServiceProxy implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Exception {
-        String servicePath = method.getDeclaringClass().getName();
-        String serviceName = servicePath.substring(servicePath.lastIndexOf(".") + 1);
+        RpcConfig rpcConfig = RpcApplication.getRpcConfig();
+        String serviceName = method.getDeclaringClass().getName();
+
         // 构造请求
         RpcRequest rpcRequest = RpcRequest.builder()
                 .serviceName(serviceName)
@@ -40,22 +41,23 @@ public class ServiceProxy implements InvocationHandler {
                 .parameterTypes(method.getParameterTypes())
                 .args(args)
                 .build();
+
         // 服务发现
         ServiceMetaInfo serviceMetaInfo = ServiceMetaInfo.builder()
                 .name(serviceName)
-                .version(RpcApplication.getRpcConfig().getVersion())
+                .version(rpcConfig.getVersion())
                 .build();
         Registry registry = RegistryFactory.registry;
         Collection<ServiceMetaInfo> serviceMetaInfoList = registry.serviceDiscovery(serviceMetaInfo.getServiceKey());
         if (CollUtil.isEmpty(serviceMetaInfoList)) {
             // 打印日志
-            log.info("未发现服务：" + serviceMetaInfo.getServiceKey());
+            log.info("未发现服务:{}", serviceMetaInfo.getServiceKey());
             throw new RuntimeException("未发现服务");
         }
 
         // 负载均衡
         LoadBalancer loadBalancer = LoadBalancerFactory.loadBalancer;
-        ServiceMetaInfo finalServiceMetaInfo = loadBalancer.select(Map.of("methodName", method.getName()), new ArrayList<>(serviceMetaInfoList));
+        final ServiceMetaInfo finalServiceMetaInfo = loadBalancer.select(Map.of("host", rpcConfig.getHost()), new ArrayList<>(serviceMetaInfoList));
 
         // 重试
         RetryStrategy retryStrategy = RetryStrategyFactory.retryStrategy;
@@ -70,7 +72,11 @@ public class ServiceProxy implements InvocationHandler {
             tolerantStrategy.doTolerant(null, e);
         }
 
-        return Objects.requireNonNull(response).getData();
+        assert response != null : "response is null";
+        Exception e = response.getException();
+        if (e != null) throw new RuntimeException(response.getMessage(), e);
+
+        return response.getData();
 //        // 基于http发送rpc请求
 //        HttpResponse httpResponse = HttpRequest.post(serviceMetaInfo.getServiceAddress())
 //                .body(bodyBytes)

@@ -43,10 +43,10 @@ public class VertxTcpClient {
         CompletableFuture<RpcResponse> cf = new CompletableFuture<>();
         // 建立tcp连接
         client.connect(serviceMetaInfo.getPort(), serviceMetaInfo.getHost(), result -> {
-            if (result.succeeded()) { // 发送rpc请求
+            if (result.succeeded()) { // 发送Rpc请求
                 log.debug("TCP server连接成功");
                 NetSocket socket = result.result();
-                // 构建rpc请求
+                // 封装Rpc请求首部
                 ProtocolMessage.Header header = ProtocolMessage.Header.builder()
                         .magic(ProtocolConstant.PROTOCOL_MAGIC)
                         .version(ProtocolConstant.PROTOCOL_VERSION)
@@ -58,12 +58,13 @@ public class VertxTcpClient {
                         .build();
                 ProtocolMessage<RpcRequest> requestProtocolMessage = new ProtocolMessage<>(header, rpcRequest);
 
-                try {
+                try { // 发送Rpc请求
                     Buffer encode = ProtocolMessageEncoder.encode(requestProtocolMessage);
                     socket.write(encode);
                 } catch (IOException e) {
                     throw new RuntimeException("协议消息编码错误");
                 }
+
                 socket.handler(new TcpBufferHandlerWrapper(buffer -> {
                     try {
                         var decode = (ProtocolMessage<RpcResponse>) ProtocolMessageDecoder.decode(buffer);
@@ -77,6 +78,7 @@ public class VertxTcpClient {
             }
         });
         RpcResponse response = cf.get();
+        // 关闭Tpc连接
         client.close();
         return response;
     }
