@@ -41,7 +41,7 @@ public class ServiceMetaInfo {
      * 获取服务键名
      */
     public String getServiceKey() {
-        return String.format("%s:%s:%s", RpcApplication.getRpcConfig().getEnv(), name, version);
+        return String.format("%s/%s:%s", RpcApplication.getRpcConfig().getEnv(), name, version);
     }
 
     /**

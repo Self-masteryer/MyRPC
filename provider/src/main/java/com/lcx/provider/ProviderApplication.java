@@ -1,18 +1,22 @@
 package com.lcx.provider;
 
+import com.lcx.common.service.IUserService;
 import com.lcx.provider.service.ipml.UserServiceImpl;
-import com.lcx.rpc.config.RpcApplication;
-import com.lcx.rpc.config.RpcConfig;
-import com.lcx.rpc.register.LocalRegister;
-import com.lcx.rpc.server.tcp.VertxTcpServer;
+import com.lcx.rpc.bootstrap.ProviderBootStrap;
+import com.lcx.rpc.model.ServiceRegisterInfo;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProviderApplication {
 
     public static void main(String[] args) {
-        RpcConfig rpcConfig = RpcApplication.getRpcConfig();
-        LocalRegister.register(rpcConfig.getName(), UserServiceImpl.class);
-        // 提供服务
-        VertxTcpServer vertxTcpServer = new VertxTcpServer();
-        vertxTcpServer.doStart(rpcConfig.getPort());
+        // 要注册的服务
+        List<ServiceRegisterInfo> serviceRegisterInfoList = new ArrayList<>();
+        ServiceRegisterInfo serviceRegisterInfo = new ServiceRegisterInfo(IUserService.class.getName(), UserServiceImpl.class);
+        serviceRegisterInfoList.add(serviceRegisterInfo);
+
+        // 服务提供者初始化
+        ProviderBootStrap.init(serviceRegisterInfoList);
     }
 }

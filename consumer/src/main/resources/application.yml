@@ -6,7 +6,7 @@ rpc:
   port: 8080
   weight: 1
   mock: false
-  serializer: kryo
+  serializer: jdk
   loadBalancer: consistentHash
   retryStrategy: no
   tolerantStrategy: failFast;
