@@ -14,8 +14,7 @@ public class RpcConsumerBootStrap implements BeanPostProcessor {
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         Class<?> beanClass = bean.getClass();
-        Field[] fields = beanClass.getFields();
-        for (Field field : fields) {
+        for (Field field : beanClass.getDeclaredFields()) {
             RpcReference rpcReference = field.getAnnotation(RpcReference.class);
             if (rpcReference != null) {
                 Class<?> interfaceClass = rpcReference.interfaceClass();
