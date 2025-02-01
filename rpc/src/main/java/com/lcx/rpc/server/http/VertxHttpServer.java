@@ -1,25 +1,20 @@
 package com.lcx.rpc.server.http;
 
 import com.lcx.rpc.server.RpcServer;
-import com.lcx.rpc.server.handler.HttpServerHandler;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import io.vertx.core.http.HttpServerRequest;
+import lombok.extern.slf4j.Slf4j;
 
-public class VertxHttpServer implements RpcServer {
-
-    private static final Logger log = LoggerFactory.getLogger(VertxHttpServer.class);
+@Slf4j
+public class VertxHttpServer implements RpcServer<HttpServerRequest> {
 
     @Override
-    public void doStart(int port) {
-        // 创建vert.x实例
+    public void doStart(int port, Handler<HttpServerRequest> handler) {
         Vertx vertx = Vertx.vertx();
-        // 创建http服务器
         HttpServer httpServer = vertx.createHttpServer();
-        // 设置请求处理器
-        httpServer.requestHandler(new HttpServerHandler());
-        // 启动服务器并监听指定端口
+        httpServer.requestHandler(handler);
         httpServer.listen(port, res -> {
             if (res.succeeded()) {
                 log.info("HttpServer started on port {}", port);

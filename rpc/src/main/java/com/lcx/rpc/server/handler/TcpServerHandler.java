@@ -27,18 +27,10 @@ public class TcpServerHandler implements Handler<NetSocket> {
             } catch (IOException e) {
                 throw new RuntimeException("协议消息解码错误");
             }
-            RpcResponse response = new RpcResponse();
 
+            RpcResponse response = new RpcResponse();
             try {
-                RpcRequest request = requestProtocolMessage.getBody();
-                Class<?> clazz = LocalRegister.get(request.getServiceName());
-                Method method = clazz.getMethod(request.getMethodName(), request.getParameterTypes());
-                method.setAccessible(true);
-                Constructor<?> constructor = clazz.getDeclaredConstructor();
-                constructor.setAccessible(true);
-                Object result = method.invoke(constructor.newInstance(), request.getArgs());
-                response.setData(result);
-                response.setDataType(method.getReturnType());
+                doResponse(requestProtocolMessage.getBody(), response);
             } catch (Exception e) {
                 e.printStackTrace();
                 response.setMessage(e.getMessage());
@@ -48,7 +40,6 @@ public class TcpServerHandler implements Handler<NetSocket> {
             ProtocolMessage.Header header = requestProtocolMessage.getHeader();
             header.setType((byte) ProtocolMessageTypeEnum.RESPONSE.getValue());
             ProtocolMessage<RpcResponse> responseProtocolMessage = new ProtocolMessage<>(header, response);
-
             try {
                 Buffer encode = ProtocolMessageEncoder.encode(responseProtocolMessage);
                 netSocket.write(encode);
@@ -56,6 +47,22 @@ public class TcpServerHandler implements Handler<NetSocket> {
                 throw new RuntimeException("协议消息编码错误");
             }
         }));
+    }
 
+    /**
+     * 响应Rpc请求
+     * @param request Rpc请求
+     * @param response Rpc响应
+     * @throws Exception 业务异常
+     */
+    protected void doResponse(RpcRequest request, RpcResponse response) throws Exception {
+        Class<?> clazz = LocalRegister.get(request.getServiceName());
+        Method method = clazz.getMethod(request.getMethodName(), request.getParameterTypes());
+        method.setAccessible(true);
+        Constructor<?> constructor = clazz.getDeclaredConstructor();
+        constructor.setAccessible(true);
+        Object result = method.invoke(constructor.newInstance(), request.getArgs());
+        response.setData(result);
+        response.setDataType(method.getReturnType());
     }
 }
