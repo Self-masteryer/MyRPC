@@ -1,7 +1,9 @@
-package com.lcx.rpc.protocol;
+package com.lcx.rpc.server.tcp.vertx.codec;
 
 import com.lcx.rpc.model.RpcRequest;
 import com.lcx.rpc.model.RpcResponse;
+import com.lcx.rpc.protocol.ProtocolConstant;
+import com.lcx.rpc.protocol.ProtocolMessage;
 import com.lcx.rpc.protocol.enums.ProtocolMessageSerializerEnum;
 import com.lcx.rpc.protocol.enums.ProtocolMessageTypeEnum;
 import com.lcx.rpc.serializer.Serializer;
@@ -39,12 +41,15 @@ public class ProtocolMessageDecoder {
         byte[] bodyBytes = buffer.getBytes(17, 17 + header.getLength());
         // 获取序列化器
         ProtocolMessageSerializerEnum serializerEnum = ProtocolMessageSerializerEnum.getByKey(header.getSerializerNum());
-        assert serializerEnum != null : "序列化消息的协议不存在";
-
+        if(serializerEnum == null) {
+            throw new RuntimeException("序列化消息的协议不存在");
+        }
         Serializer serializer = SerializerFactory.getSerializer(serializerEnum.getValue());
         // 获取消息类型
         ProtocolMessageTypeEnum messageTypeEnum = ProtocolMessageTypeEnum.getByValue(header.getMessageType());
-        assert messageTypeEnum != null : "序列化消息的类型不存在";
+        if (messageTypeEnum == null) {
+            throw new RuntimeException("序列化消息的类型不存在");
+        }
 
         return switch (messageTypeEnum) {
             case REQUEST -> {

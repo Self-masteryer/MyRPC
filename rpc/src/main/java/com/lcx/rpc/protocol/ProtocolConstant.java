@@ -5,7 +5,7 @@ public final class ProtocolConstant {
     /**
      * 协议魔数
      */
-    public static final byte PROTOCOL_MAGIC = 0x1;
+    public static final int PROTOCOL_MAGIC = 0x00000001;
 
     /**
      * 协议版本号
@@ -15,10 +15,15 @@ public final class ProtocolConstant {
     /**
      * 消息体长度偏移量
      */
-    public static final int MESSAGE_LENGTH_OFFSET =13;
+    public static final int MESSAGE_BODY_LENGTH_OFFSET =16;
 
     /**
-     * 消息头长度
+     * 协议首都长度
      */
-    public static final int MESSAGE_HEADER_LENGTH = 17;
+    public static final int PROTOCOL_HEADER_LENGTH = 20;
+
+    /**
+     * 消息最大长度
+     */
+    public static final int MESSAGE_MAX_LENGTH = 1024;
 }
