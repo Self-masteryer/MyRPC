@@ -21,7 +21,7 @@ public class ProtocolMessageDecoder {
      * @return 消息
      */
     public static ProtocolMessage<?> decode(Buffer buffer) throws IOException {
-        byte magic = buffer.getByte(0);
+        int magic = buffer.getInt(0);
         // 校验魔数
         if (magic != ProtocolConstant.PROTOCOL_MAGIC) {
             throw new RuntimeException("消息 magic 非法");

@@ -7,6 +7,7 @@ import com.lcx.rpc.model.ServiceRegisterInfo;
 import com.lcx.rpc.register.LocalRegister;
 import com.lcx.rpc.register.Registry;
 import com.lcx.rpc.register.RegistryFactory;
+import com.lcx.rpc.server.handler.NewRpcReqHandler;
 import com.lcx.rpc.server.tcp.netty.NettyServer;
 
 import java.util.List;
@@ -40,6 +41,6 @@ public class ProviderBootStrap {
             }
         }
         // 启动服务器
-        NettyServer.start(rpcConfig.getPort());
+        new NettyServer().doStart(8081,new NewRpcReqHandler());
     }
 }

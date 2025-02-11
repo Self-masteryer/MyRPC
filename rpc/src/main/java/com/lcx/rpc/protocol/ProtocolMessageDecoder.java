@@ -10,6 +10,8 @@ import io.vertx.core.buffer.Buffer;
 
 import java.io.IOException;
 
+import static com.lcx.rpc.protocol.ProtocolConstant.PROTOCOL_HEADER_LENGTH;
+
 public class ProtocolMessageDecoder {
 
     /**
@@ -19,7 +21,7 @@ public class ProtocolMessageDecoder {
      * @return 消息
      */
     public static ProtocolMessage<?> decode(Buffer buffer) throws IOException {
-        byte magic = buffer.getByte(0);
+        int magic = buffer.getInt(0);
         // 校验魔数
         if (magic != ProtocolConstant.PROTOCOL_MAGIC) {
             throw new RuntimeException("消息 magic 非法");
@@ -27,16 +29,16 @@ public class ProtocolMessageDecoder {
         // 解析请求头
         ProtocolMessage.Header header = ProtocolMessage.Header.builder()
                 .magicNum(magic)
-                .version(buffer.getByte(1))
-                .serializerNum(buffer.getByte(2))
-                .messageType(buffer.getByte(3))
-                .status(buffer.getByte(4))
-                .requestId(buffer.getLong(5))
-                .length(buffer.getInt(13))
+                .version(buffer.getByte(4))
+                .serializerNum(buffer.getByte(5))
+                .messageType(buffer.getByte(6))
+                .status(buffer.getByte(7))
+                .requestId(buffer.getLong(8))
+                .length(buffer.getInt(16))
                 .build();
 
         // 反序列化
-        byte[] bodyBytes = buffer.getBytes(17, 17 + header.getLength());
+        byte[] bodyBytes = buffer.getBytes(PROTOCOL_HEADER_LENGTH, PROTOCOL_HEADER_LENGTH + header.getLength());
         // 获取序列化器
         ProtocolMessageSerializerEnum serializerEnum = ProtocolMessageSerializerEnum.getByKey(header.getSerializerNum());
         assert serializerEnum != null : "序列化消息的协议不存在";
