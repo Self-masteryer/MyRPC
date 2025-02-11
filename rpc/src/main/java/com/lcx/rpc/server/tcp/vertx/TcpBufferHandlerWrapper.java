@@ -1,4 +1,4 @@
-package com.lcx.rpc.server.tcp;
+package com.lcx.rpc.server.tcp.vertx;
 
 import com.lcx.rpc.protocol.ProtocolConstant;
 import io.vertx.core.Handler;
@@ -30,7 +30,7 @@ public class TcpBufferHandlerWrapper implements Handler<Buffer> {
      * @param handler buffer处理器
      */
     private void init(Handler<Buffer> handler) {
-        recordParser = RecordParser.newFixed(ProtocolConstant.MESSAGE_HEADER_LENGTH);
+        recordParser = RecordParser.newFixed(ProtocolConstant.PROTOCOL_HEADER_LENGTH);
         recordParser.setOutput(new Handler<>() {
             private int size = -1;
             // 一次完整的读取（头 + 体）
@@ -40,7 +40,7 @@ public class TcpBufferHandlerWrapper implements Handler<Buffer> {
             public void handle(Buffer buffer) {
                 if (size == -1) { // 读的消息头
                     // 读取消息体大小
-                    size = buffer.getInt(ProtocolConstant.MESSAGE_LENGTH_OFFSET);
+                    size = buffer.getInt(ProtocolConstant.MESSAGE_BODY_LENGTH_OFFSET);
                     recordParser.fixedSizeMode(size);
                     // 加入缓冲区
                     this.buffer.appendBuffer(buffer);
@@ -51,7 +51,7 @@ public class TcpBufferHandlerWrapper implements Handler<Buffer> {
 
                     // 重置一轮
                     size = -1;
-                    recordParser.fixedSizeMode(ProtocolConstant.MESSAGE_HEADER_LENGTH);
+                    recordParser.fixedSizeMode(ProtocolConstant.PROTOCOL_HEADER_LENGTH);
                     this.buffer = Buffer.buffer();
                 }
             }

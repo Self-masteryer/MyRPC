@@ -1,4 +1,4 @@
-package com.lcx.rpc.server.handler;
+package com.lcx.rpc.server.http;
 
 import com.lcx.rpc.config.RpcApplication;
 import com.lcx.rpc.model.RpcRequest;
@@ -18,7 +18,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 @Slf4j
-public class HttpServerHandler implements Handler<HttpServerRequest> {
+public class VertxHttpServerHandler implements Handler<HttpServerRequest> {
 
     @Override
     public void handle(HttpServerRequest request) {
@@ -47,11 +47,12 @@ public class HttpServerHandler implements Handler<HttpServerRequest> {
                 Object result = method.invoke(constructor.newInstance(), rpcRequest.getArgs());
 
                 rpcResponse.setData(result);
-                rpcResponse.setDataType(result.getClass());
+                rpcResponse.setDataType(method.getReturnType());
                 rpcResponse.setMessage("success");
             } catch (Exception e) {
                 e.printStackTrace();
-                rpcResponse.setMessage(e.getMessage());
+                Throwable cause = e.getCause();
+                rpcResponse.setMessage(cause.getMessage());
                 rpcResponse.setException(e);
             }
             doResponse(request, rpcResponse, serializer);

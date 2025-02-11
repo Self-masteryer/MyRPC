@@ -1,4 +1,4 @@
-package com.lcx.rpc.server.handler;
+package com.lcx.rpc.server.tcp.vertx;
 
 import com.lcx.rpc.model.RpcRequest;
 import com.lcx.rpc.model.RpcResponse;
@@ -7,7 +7,6 @@ import com.lcx.rpc.protocol.ProtocolMessageDecoder;
 import com.lcx.rpc.protocol.ProtocolMessageEncoder;
 import com.lcx.rpc.protocol.enums.ProtocolMessageTypeEnum;
 import com.lcx.rpc.register.LocalRegister;
-import com.lcx.rpc.server.tcp.TcpBufferHandlerWrapper;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetSocket;
@@ -16,7 +15,7 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
-public class TcpServerHandler implements Handler<NetSocket> {
+public class VertxTcpServerHandler implements Handler<NetSocket> {
 
     @Override
     public void handle(NetSocket netSocket) {
@@ -33,12 +32,13 @@ public class TcpServerHandler implements Handler<NetSocket> {
                 doResponse(requestProtocolMessage.getBody(), response);
             } catch (Exception e) {
                 e.printStackTrace();
-                response.setMessage(e.getMessage());
+                Throwable cause = e.getCause();
+                response.setMessage(cause.getMessage());
                 response.setException(e);
             }
 
             ProtocolMessage.Header header = requestProtocolMessage.getHeader();
-            header.setType((byte) ProtocolMessageTypeEnum.RESPONSE.getValue());
+            header.setMessageType((byte) ProtocolMessageTypeEnum.RESPONSE.getValue());
             ProtocolMessage<RpcResponse> responseProtocolMessage = new ProtocolMessage<>(header, response);
             try {
                 Buffer encode = ProtocolMessageEncoder.encode(responseProtocolMessage);

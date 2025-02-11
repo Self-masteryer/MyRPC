@@ -1,4 +1,4 @@
-package com.lcx.rpc.server.tcp;
+package com.lcx.rpc.server.tcp.vertx;
 
 import cn.hutool.core.util.IdUtil;
 import com.esotericsoftware.minlog.Log;
@@ -21,22 +21,21 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 /**
- * Tcp客户端
+ * 基于Vertx实现的Tcp客户端
  */
 @Slf4j
 public class VertxTcpClient {
 
     /**
-     * 基于tcp发送自定义rpc请求
+     * 发送Rpc请求
      *
      * @param rpcRequest      Rpc请求
      * @param serviceMetaInfo 服务元数据
      * @return Rpc响应
      */
-    public static RpcResponse doRequest(RpcRequest rpcRequest, ServiceMetaInfo serviceMetaInfo) throws InterruptedException, ExecutionException {
+    public static RpcResponse doRequest(RpcRequest rpcRequest, ServiceMetaInfo serviceMetaInfo) throws Exception {
         Vertx vertx = Vertx.vertx();
         // 创建tcp客户端
         NetClient client = vertx.createNetClient();
@@ -48,12 +47,12 @@ public class VertxTcpClient {
                 NetSocket socket = result.result();
                 // 封装Rpc请求首部
                 ProtocolMessage.Header header = ProtocolMessage.Header.builder()
-                        .magic(ProtocolConstant.PROTOCOL_MAGIC)
+                        .magicNum(ProtocolConstant.PROTOCOL_MAGIC)
                         .version(ProtocolConstant.PROTOCOL_VERSION)
-                        .serializer((byte) Objects.requireNonNull(ProtocolMessageSerializerEnum
+                        .serializerNum((byte) Objects.requireNonNull(ProtocolMessageSerializerEnum
                                         .getByValue(RpcApplication.getRpcConfig().getSerializer()))
-                                        .getKey())
-                        .type((byte) ProtocolMessageTypeEnum.REQUEST.getValue())
+                                .getKey())
+                        .messageType((byte) ProtocolMessageTypeEnum.REQUEST.getValue())
                         .requestId(IdUtil.getSnowflakeNextId())
                         .build();
                 ProtocolMessage<RpcRequest> requestProtocolMessage = new ProtocolMessage<>(header, rpcRequest);

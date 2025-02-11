@@ -7,8 +7,7 @@ import com.lcx.rpc.model.ServiceRegisterInfo;
 import com.lcx.rpc.register.LocalRegister;
 import com.lcx.rpc.register.Registry;
 import com.lcx.rpc.register.RegistryFactory;
-import com.lcx.rpc.server.handler.TcpServerHandler;
-import com.lcx.rpc.server.tcp.VertxTcpServer;
+import com.lcx.rpc.server.tcp.netty.NettyServer;
 
 import java.util.List;
 
@@ -41,7 +40,6 @@ public class ProviderBootStrap {
             }
         }
         // 启动服务器
-        VertxTcpServer vertxTcpServer = new VertxTcpServer();
-        vertxTcpServer.doStart(rpcConfig.getPort(), new TcpServerHandler());
+        NettyServer.start(rpcConfig.getPort());
     }
 }
