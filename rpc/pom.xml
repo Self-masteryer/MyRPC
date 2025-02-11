@@ -24,10 +24,17 @@
         <snakeyaml.version>2.3</snakeyaml.version>
         <curator.version>5.7.1</curator.version>
         <guava-retrying.version>2.0.0</guava-retrying.version>
+        <netty-all.version>4.1.117.Final</netty-all.version>
     </properties>
 
     <dependencies>
 
+        <!-- netty -->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>${netty-all.version}</version>
+        </dependency>
         <!-- guava-retrying -->
         <dependency>
             <groupId>com.github.rholder</groupId>

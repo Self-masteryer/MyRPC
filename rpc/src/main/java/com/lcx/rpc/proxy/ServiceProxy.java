@@ -17,7 +17,7 @@ import com.lcx.rpc.model.RpcResponse;
 import com.lcx.rpc.model.ServiceMetaInfo;
 import com.lcx.rpc.register.Registry;
 import com.lcx.rpc.register.RegistryFactory;
-import com.lcx.rpc.server.tcp.VertxTcpClient;
+import com.lcx.rpc.server.tcp.netty.NettyClient;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -64,7 +64,7 @@ public class ServiceProxy implements InvocationHandler {
         RpcResponse response = null;
         try {
             response = retryStrategy.doRetry(() ->
-                    VertxTcpClient.doRequest(rpcRequest, finalServiceMetaInfo)
+                    NettyClient.doRequest(rpcRequest, finalServiceMetaInfo).get()
             );
         } catch (Exception e) {
             // 容错机制
