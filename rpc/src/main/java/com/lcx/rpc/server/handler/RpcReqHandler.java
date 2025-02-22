@@ -16,20 +16,27 @@ public interface RpcReqHandler {
      *
      * @param request  Rpc请求
      * @param response Rpc响应
-     * @throws Exception 反射异常
      */
-    default void doResponse(RpcRequest request, RpcResponse response) throws Exception {
-        Class<?> clazz = LocalRegister.get(request.getServiceName());
-        Method method = clazz.getMethod(request.getMethodName(), request.getParameterTypes());
-        method.setAccessible(true);
-        Object instance = getInstance(clazz);
-        Object result = method.invoke(instance, request.getArgs());
-        response.setData(result);
-        response.setDataType(method.getReturnType());
+    default void doResponse(RpcRequest request, RpcResponse response) {
+        try {
+            Class<?> clazz = LocalRegister.get(request.getServiceName());
+            Method method = clazz.getMethod(request.getMethodName(), request.getParameterTypes());
+            method.setAccessible(true);
+            Object instance = getInstance(clazz);
+            Object result = method.invoke(instance, request.getArgs());
+            response.setData(result);
+            response.setDataType(method.getReturnType());
+        } catch (Exception e) {
+            e.printStackTrace();
+            Throwable cause = e.getCause();
+            response.setMessage(cause.getMessage());
+            response.setException(e);
+        }
     }
 
     /**
      * 获取服务实例对象
+     *
      * @param clazz 服务类字节码对象
      * @return 服务实例对象
      */

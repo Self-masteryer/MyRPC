@@ -38,14 +38,14 @@ public class ServiceMetaInfo {
     private Integer weight = 1;
 
     /**
-     * 获取服务键名
+     * 获取服务键
      */
     public String getServiceKey() {
         return String.format("%s/%s:%s", RpcApplication.getRpcConfig().getEnv(), name, version);
     }
 
     /**
-     * 获取服务节点键名
+     * 获取服务节点键
      */
     public String getServiceNodeKey() {
         return String.format("%s/%s:%s", getServiceKey(), host, port);

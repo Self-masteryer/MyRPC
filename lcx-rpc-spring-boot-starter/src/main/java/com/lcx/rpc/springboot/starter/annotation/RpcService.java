@@ -1,6 +1,6 @@
 package com.lcx.rpc.springboot.starter.annotation;
 
-import com.lcx.rpc.constant.RpcConstant;
+import com.lcx.rpc.common.constant.RpcConstant;
 import com.lcx.rpc.springboot.starter.utils.SpringContextUtil;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
 package com.lcx.rpc.springboot.starter.annotation;
 
-import com.lcx.rpc.constant.RpcConstant;
+import com.lcx.rpc.common.constant.RpcConstant;
 import com.lcx.rpc.fault.retry.RetryStrategyKeys;
 import com.lcx.rpc.fault.tolerant.TolerantStrategyKeys;
 import com.lcx.rpc.loadbalancer.LoadBalancerKeys;

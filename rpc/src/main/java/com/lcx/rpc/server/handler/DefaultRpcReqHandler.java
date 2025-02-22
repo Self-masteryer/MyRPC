@@ -3,9 +3,9 @@ package com.lcx.rpc.server.handler;
 import java.lang.reflect.Constructor;
 
 /**
- * new出实例对象
+ * 默认Rpc请求处理器：new出实例对象
  */
-public class NewRpcReqHandler implements RpcReqHandler{
+public class DefaultRpcReqHandler implements RpcReqHandler{
 
     @Override
     public Object getInstance(Class<?> clazz) {

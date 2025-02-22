@@ -24,14 +24,8 @@ public class RpcServerHandler extends SimpleChannelInboundHandler<ProtocolMessag
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, ProtocolMessage<RpcRequest> protocolMessage) throws Exception {
         RpcResponse response = new RpcResponse();
-        try {
-            rpcReqHandler.doResponse(protocolMessage.getBody(), response);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Throwable cause = e.getCause();
-            response.setMessage(cause.getMessage());
-            response.setException(e);
-        }
+        rpcReqHandler.doResponse(protocolMessage.getBody(), response);
+
         ProtocolMessage.Header header = protocolMessage.getHeader();
         header.setMessageType((byte) ProtocolMessageTypeEnum.RESPONSE.getValue());
         ProtocolMessage<RpcResponse> responseProtocolMessage = new ProtocolMessage<>(header, response);

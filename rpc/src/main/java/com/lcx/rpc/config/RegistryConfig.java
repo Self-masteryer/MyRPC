@@ -16,9 +16,10 @@ public class RegistryConfig {
     private String username;
     // 密码
     private String password;
-    // 超时时间(默认5s)
+    // 连接超时时间(默认5s)
     private Long timeout = 5000L;
-    // 租约时间
+    // 租约时间(默认30秒),续约频率=租约时间/3
     private Integer leaseTime = 30;
-
+    // 补偿间隔(默认3分钟)
+    private Integer compensationInterval = 3;
 }

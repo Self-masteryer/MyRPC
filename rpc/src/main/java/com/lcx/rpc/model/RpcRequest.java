@@ -1,6 +1,6 @@
 package com.lcx.rpc.model;
 
-import com.lcx.rpc.constant.RpcConstant;
+import com.lcx.rpc.common.constant.RpcConstant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

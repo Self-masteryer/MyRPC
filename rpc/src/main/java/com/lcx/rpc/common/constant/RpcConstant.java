@@ -1,4 +1,4 @@
-package com.lcx.rpc.constant;
+package com.lcx.rpc.common.constant;
 
 /**
  * RPC相关常量

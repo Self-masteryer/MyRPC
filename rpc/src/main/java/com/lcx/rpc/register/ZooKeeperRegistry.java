@@ -3,6 +3,7 @@ package com.lcx.rpc.register;
 import cn.hutool.core.collection.ConcurrentHashSet;
 
 import com.lcx.rpc.config.RegistryConfig;
+import com.lcx.rpc.config.RpcApplication;
 import com.lcx.rpc.model.ServiceMetaInfo;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -38,8 +39,8 @@ public class ZooKeeperRegistry implements Registry {
     // 根节点
     private static final String ZK_ROOT_PATH = "/rpc/zk";
 
-    @Override
-    public void init(RegistryConfig registryConfig) {
+    {
+        RegistryConfig registryConfig = RpcApplication.getRpcConfig().getRegistry();
         // 构建 client 实例
         client = CuratorFrameworkFactory
                 .builder()
@@ -108,8 +109,7 @@ public class ZooKeeperRegistry implements Registry {
         }
     }
 
-    @Override
-    public void watch(String serviceNodeKey) {
+    private void watch(String serviceNodeKey) {
         String watchKey = ZK_ROOT_PATH + "/" + serviceNodeKey;
         if (!watchingKeySet.contains(watchKey)) {
             CuratorCache curatorCache = CuratorCache.build(client, watchKey);
