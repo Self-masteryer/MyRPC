@@ -2,6 +2,7 @@ package com.lcx.rpc.loadbalancer;
 
 import com.lcx.rpc.model.ServiceMetaInfo;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * 平滑加权轮询负载均衡器
  */
+@Slf4j
 public class WeightedRoundRobinLoadBalancer implements LoadBalancer {
 
     // 服务键 -> 状态
@@ -53,6 +55,7 @@ public class WeightedRoundRobinLoadBalancer implements LoadBalancer {
     @Override
     public void refresh(String serviceKey, List<ServiceMetaInfo> serviceMetaInfoList) {
         currentStatusMap.put(serviceKey, new State(serviceMetaInfoList));
+        log.debug("刷新负载均衡器状态:{}", serviceKey);
     }
 
     @Data

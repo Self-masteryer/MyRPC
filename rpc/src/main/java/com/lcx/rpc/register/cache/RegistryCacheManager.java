@@ -40,7 +40,6 @@ public abstract class RegistryCacheManager {
         );
         // 添加负载均衡监听器：更新状态
         addListener(LoadBalancerFactory.loadBalancer::refresh);
-        log.info("成功添加负载均衡监听器");
     }
 
     /**

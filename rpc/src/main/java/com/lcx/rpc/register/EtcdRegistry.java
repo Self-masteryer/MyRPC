@@ -5,7 +5,6 @@ import com.lcx.rpc.common.exception.RegistryException;
 import com.lcx.rpc.config.RegistryConfig;
 import com.lcx.rpc.config.RpcApplication;
 import com.lcx.rpc.model.ServiceMetaInfo;
-import com.lcx.rpc.register.cache.CacheUpdateListener;
 import com.lcx.rpc.register.cache.EtcdCacheManager;
 import com.lcx.rpc.register.cache.RegistryCacheManager;
 import io.etcd.jetcd.*;
@@ -25,8 +24,9 @@ import java.util.concurrent.*;
 @Slf4j
 public class EtcdRegistry implements Registry {
 
-    private static final String ETCD_ROOT_PATH = "/rpc/";
-    // Etcd客户端
+    // 键值根路径
+    public static final String ROOT_PATH = "/rpc/";
+    // Etcd 客户端
     private final Client client;
     private final KV kvClient;
     private final Lease leaseClient;
@@ -61,20 +61,21 @@ public class EtcdRegistry implements Registry {
 
     @Override
     public void register(ServiceMetaInfo serviceMetaInfo) throws Exception {
-        String serviceNodeKey = ETCD_ROOT_PATH + serviceMetaInfo.getServiceNodeKey();
-        if (leaseIdMap.containsKey(serviceNodeKey)) return;
+        String serviceNodeKey = serviceMetaInfo.getServiceNodeKey();
+        String etcdServiceNodeKey = ROOT_PATH + serviceNodeKey;
+        if (leaseIdMap.containsKey(etcdServiceNodeKey)) return;
         try {
             // 1. 创建租约
             long leaseId = leaseClient.grant(RpcApplication.getRpcConfig().getRegistry().getLeaseTime()).get().getID();
 
             // 2. 注册服务节点
-            ByteSequence key = ByteSequence.from(serviceNodeKey, StandardCharsets.UTF_8);
+            ByteSequence key = ByteSequence.from(etcdServiceNodeKey, StandardCharsets.UTF_8);
             ByteSequence value = ByteSequence.from(JSONUtil.toJsonStr(serviceMetaInfo), StandardCharsets.UTF_8);
             PutOption putOption = PutOption.builder().withLeaseId(leaseId).build();
             kvClient.put(key, value, putOption).get();
 
             // 3. 维护租约
-            leaseIdMap.put(serviceNodeKey, leaseId);
+            leaseIdMap.put(etcdServiceNodeKey, leaseId);
             localServiceRegisterSet.add(serviceMetaInfo);
 
             // 4. 启动心跳续约
@@ -89,14 +90,15 @@ public class EtcdRegistry implements Registry {
 
     @Override
     public void unRegister(ServiceMetaInfo serviceMetaInfo) {
-        String serviceNodeKey = ETCD_ROOT_PATH + serviceMetaInfo.getServiceNodeKey();
+        String serviceNodeKey = serviceMetaInfo.getServiceNodeKey();
+        String etcdServiceNodeKey = ROOT_PATH + serviceNodeKey;
         try {
             // 1. 删除Etcd节点
-            kvClient.delete(ByteSequence.from(serviceNodeKey, StandardCharsets.UTF_8)).get();
+            kvClient.delete(ByteSequence.from(etcdServiceNodeKey, StandardCharsets.UTF_8)).get();
 
             // 2. 清理本地记录
             localServiceRegisterSet.remove(serviceMetaInfo);
-            Long leaseId = leaseIdMap.remove(serviceNodeKey);
+            Long leaseId = leaseIdMap.remove(etcdServiceNodeKey);
             if (leaseId != null) {
                 leaseClient.revoke(leaseId).get();
             }
@@ -109,8 +111,7 @@ public class EtcdRegistry implements Registry {
 
     @Override
     public List<ServiceMetaInfo> serviceDiscovery(String serviceKey) {
-        String etcdKey = ETCD_ROOT_PATH + serviceKey + "/";
-        return cacheManager.getServices(etcdKey);
+        return cacheManager.getServices(serviceKey);
     }
 
     @Override
@@ -132,6 +133,16 @@ public class EtcdRegistry implements Registry {
         log.info("Etcd注册中心已关闭");
     }
 
+    /**
+     * 返回与注册中心实现适配的键
+     *
+     * @param key 键名
+     * @return 适配键
+     */
+    public static String adaptKey(String key) {
+        return ROOT_PATH + key;
+    }
+
     //------------------------ 私有方法 ------------------------
 
     /**
@@ -151,7 +162,7 @@ public class EtcdRegistry implements Registry {
             public void onError(Throwable t) {
                 log.error("租约续期失败,尝试重新注册服务", t);
                 try {
-                    leaseIdMap.remove(metaInfo.getServiceNodeKey());
+                    leaseIdMap.remove(ROOT_PATH + metaInfo.getServiceNodeKey());
                     register(metaInfo); // 重新注册
                     log.info("服务重注册成功: {}", metaInfo.getServiceNodeKey());
                 } catch (Exception e) {
@@ -176,7 +187,7 @@ public class EtcdRegistry implements Registry {
             try {
                 localServiceRegisterSet.forEach(serviceMetaInfo -> {
                     String serviceNodeKey = serviceMetaInfo.getServiceNodeKey();
-                    if (!leaseIdMap.containsKey(ETCD_ROOT_PATH + serviceMetaInfo.getServiceNodeKey())) {
+                    if (!leaseIdMap.containsKey(ROOT_PATH + serviceNodeKey)) {
                         log.info("尝试补偿注册：{}", serviceNodeKey);
                         try {
                             register(serviceMetaInfo);

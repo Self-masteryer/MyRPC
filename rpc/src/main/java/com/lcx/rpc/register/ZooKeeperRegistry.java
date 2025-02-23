@@ -28,6 +28,8 @@ import static io.vertx.core.http.impl.HttpClientConnection.log;
  */
 public class ZooKeeperRegistry implements Registry {
 
+    public static final String ROOT_PATH = "/rpc/zk";
+
     private CuratorFramework client;
     private ServiceDiscovery<ServiceMetaInfo> serviceDiscovery;
     // 本机注册的节点 key 集合（用于维护续期）
@@ -36,8 +38,6 @@ public class ZooKeeperRegistry implements Registry {
     private final RegistryServiceCache registryServiceCache = new RegistryServiceCache();
     // 正在监听的 key 集合
     private final Set<String> watchingKeySet = new ConcurrentHashSet<>();
-    // 根节点
-    private static final String ZK_ROOT_PATH = "/rpc/zk";
 
     {
         RegistryConfig registryConfig = RpcApplication.getRpcConfig().getRegistry();
@@ -50,7 +50,7 @@ public class ZooKeeperRegistry implements Registry {
         // 构建 serviceDiscovery 实例
         serviceDiscovery = ServiceDiscoveryBuilder.builder(ServiceMetaInfo.class)
                 .client(client)
-                .basePath(ZK_ROOT_PATH)
+                .basePath(ROOT_PATH)
                 .serializer(new JsonInstanceSerializer<>(ServiceMetaInfo.class))
                 .build();
         try {
@@ -67,7 +67,7 @@ public class ZooKeeperRegistry implements Registry {
         // 注册到 zk 里
         serviceDiscovery.registerService(buildServiceInstance(serviceMetaInfo));
         // 添加节点信息到本地缓存
-        String registerKey = ZK_ROOT_PATH + "/" + serviceMetaInfo.getServiceNodeKey();
+        String registerKey = ROOT_PATH + "/" + serviceMetaInfo.getServiceNodeKey();
         localRegisterNodeKeySet.add(registerKey);
     }
 
@@ -79,7 +79,7 @@ public class ZooKeeperRegistry implements Registry {
             throw new RuntimeException(e);
         }
         // 从本地缓存移除
-        String registerKey = ZK_ROOT_PATH + "/" + serviceMetaInfo.getServiceNodeKey();
+        String registerKey = ROOT_PATH + "/" + serviceMetaInfo.getServiceNodeKey();
         localRegisterNodeKeySet.remove(registerKey);
     }
 
@@ -110,7 +110,7 @@ public class ZooKeeperRegistry implements Registry {
     }
 
     private void watch(String serviceNodeKey) {
-        String watchKey = ZK_ROOT_PATH + "/" + serviceNodeKey;
+        String watchKey = ROOT_PATH + "/" + serviceNodeKey;
         if (!watchingKeySet.contains(watchKey)) {
             CuratorCache curatorCache = CuratorCache.build(client, watchKey);
             curatorCache.start();
@@ -137,6 +137,16 @@ public class ZooKeeperRegistry implements Registry {
         }
         // 释放资源
         if (client != null) client.close();
+    }
+
+    /**
+     * 返回与注册中心实现适配的键
+     *
+     * @param key 键名
+     * @return 适配键
+     */
+    public static String adaptKey(String key) {
+        return ROOT_PATH + key;
     }
 
     private ServiceInstance<ServiceMetaInfo> buildServiceInstance(ServiceMetaInfo serviceMetaInfo) {

@@ -2,8 +2,8 @@ package com.lcx.rpc.register.cache;
 
 import cn.hutool.json.JSONUtil;
 import com.lcx.rpc.config.RpcApplication;
-import com.lcx.rpc.loadbalancer.LoadBalancerFactory;
 import com.lcx.rpc.model.ServiceMetaInfo;
+import com.lcx.rpc.register.EtcdRegistry;
 import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.KV;
 import io.etcd.jetcd.KeyValue;
@@ -38,32 +38,34 @@ public class EtcdCacheManager extends RegistryCacheManager {
 
     @Override
     protected List<ServiceMetaInfo> loadServiceData(String serviceKey) throws Exception {
+        String etcdServiceKey = EtcdRegistry.ROOT_PATH + serviceKey;
         GetOption option = GetOption.builder().isPrefix(true).build();
         List<KeyValue> kvs = kvClient.get(
-                ByteSequence.from(serviceKey, StandardCharsets.UTF_8),
+                ByteSequence.from(etcdServiceKey, StandardCharsets.UTF_8),
                 option
         ).get().getKvs();
 
         return kvs.stream()
-                .map(kv->JSONUtil.toBean(kv.getValue().toString(StandardCharsets.UTF_8), ServiceMetaInfo.class))
+                .map(kv -> JSONUtil.toBean(kv.getValue().toString(StandardCharsets.UTF_8), ServiceMetaInfo.class))
                 .collect(Collectors.toList());
     }
 
     @Override
     protected void registerWatch(String serviceKey) {
-        if (activeWatchers.containsKey(serviceKey)) return;
+        String etcdServiceKey = EtcdRegistry.ROOT_PATH + serviceKey;
+        if (activeWatchers.containsKey(etcdServiceKey)) return;
         lock.lock();
         try {
-            if (activeWatchers.containsKey(serviceKey)) return;
+            if (activeWatchers.containsKey(etcdServiceKey)) return;
             WatchOption option = WatchOption.builder().isPrefix(true).build();
             Watch.Watcher watcher = watchClient.watch(
-                    ByteSequence.from(serviceKey, StandardCharsets.UTF_8),
+                    ByteSequence.from(etcdServiceKey, StandardCharsets.UTF_8),
                     option,
                     response -> response.getEvents().forEach(event ->
                             handleEvent(serviceKey, event)
                     )
             );
-            activeWatchers.put(serviceKey, watcher);
+            activeWatchers.put(etcdServiceKey, watcher);
         } finally {
             lock.unlock();
         }
