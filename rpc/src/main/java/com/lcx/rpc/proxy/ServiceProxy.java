@@ -57,7 +57,8 @@ public class ServiceProxy implements InvocationHandler {
 
         // 负载均衡
         LoadBalancer loadBalancer = LoadBalancerFactory.loadBalancer;
-        final ServiceMetaInfo finalServiceMetaInfo = loadBalancer.select(Map.of("host", rpcConfig.getHost()), new ArrayList<>(serviceMetaInfoList));
+        Map<String, Object> params = Map.of("serviceKey", serviceMetaInfo.getServiceKey(), "host", rpcConfig.getHost());
+        final ServiceMetaInfo finalServiceMetaInfo = loadBalancer.select(params, new ArrayList<>(serviceMetaInfoList));
 
         // 重试
         RetryStrategy retryStrategy = RetryStrategyFactory.retryStrategy;
@@ -74,7 +75,7 @@ public class ServiceProxy implements InvocationHandler {
 
         assert response != null : "response is null";
         Exception e = response.getException();
-        if (e != null) throw new RuntimeException(response.getMessage(), e);
+        if (e != null) throw new RuntimeException(e.getMessage(), e);
 
         return response.getData();
 //        // 基于http发送rpc请求

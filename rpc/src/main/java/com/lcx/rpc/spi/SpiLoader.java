@@ -1,6 +1,8 @@
 package com.lcx.rpc.spi;
 
 import cn.hutool.core.io.resource.ResourceUtil;
+import com.lcx.rpc.fault.retry.RetryStrategy;
+import com.lcx.rpc.fault.tolerant.TolerantStrategy;
 import com.lcx.rpc.loadbalancer.LoadBalancer;
 import com.lcx.rpc.register.Registry;
 import com.lcx.rpc.serializer.Serializer;
@@ -56,7 +58,9 @@ public class SpiLoader {
     private static final List<Class<?>> LOAD_CLASS_LIST = List.of(
             Serializer.class,
             Registry.class,
-            LoadBalancer.class);
+            LoadBalancer.class,
+            RetryStrategy.class,
+            TolerantStrategy.class);
 
     /**
      * 加载所有类型

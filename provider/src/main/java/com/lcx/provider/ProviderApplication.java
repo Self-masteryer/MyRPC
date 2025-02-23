@@ -13,7 +13,7 @@ public class ProviderApplication {
     public static void main(String[] args) {
         // 要注册的服务
         List<ServiceRegisterInfo> serviceRegisterInfoList = new ArrayList<>();
-        ServiceRegisterInfo serviceRegisterInfo = new ServiceRegisterInfo(IUserService.class.getName(), UserServiceImpl.class);
+        ServiceRegisterInfo<UserServiceImpl> serviceRegisterInfo = new ServiceRegisterInfo<>(IUserService.class.getName(), UserServiceImpl.class);
         serviceRegisterInfoList.add(serviceRegisterInfo);
 
         // 服务提供者初始化

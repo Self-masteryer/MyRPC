@@ -9,9 +9,10 @@ rpc:
   serializer: jdk
   loadBalancer: consistentHash
   retryStrategy: fixedInterval
-  tolerantStrategy: failFast;
+  tolerantStrategy: failFast
   registry:
     type: etcd
     address: "http://localhost:2379"
     timeout: 5000
     leaseTime: 30
+    compensationInterval: 1

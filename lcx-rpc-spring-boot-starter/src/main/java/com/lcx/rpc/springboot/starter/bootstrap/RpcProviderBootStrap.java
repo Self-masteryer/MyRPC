@@ -26,8 +26,8 @@ public class RpcProviderBootStrap implements BeanPostProcessor {
 
             String serviceName = interfaceClass.getName();
             String serviceVersion = rpcService.serviceVersion();
-            // 本地服务注册
-            LocalRegister.register(serviceName, interfaceClass);
+            // 本地服务注册: 接口名称,实现类
+            LocalRegister.register(serviceName, beanClass);
             // 服务注册
             RpcConfig rpcConfig = RpcApplication.getRpcConfig();
             Registry registry = RegistryFactory.registry;
