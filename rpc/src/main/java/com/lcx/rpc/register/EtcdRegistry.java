@@ -5,6 +5,7 @@ import com.lcx.rpc.common.exception.RegistryException;
 import com.lcx.rpc.config.RegistryConfig;
 import com.lcx.rpc.config.RpcApplication;
 import com.lcx.rpc.model.ServiceMetaInfo;
+import com.lcx.rpc.register.cache.CacheUpdateListener;
 import com.lcx.rpc.register.cache.EtcdCacheManager;
 import com.lcx.rpc.register.cache.RegistryCacheManager;
 import io.etcd.jetcd.*;
@@ -50,7 +51,7 @@ public class EtcdRegistry implements Registry {
             // 2. 初始化缓存管理器
             cacheManager = new EtcdCacheManager(kvClient, client.getWatchClient());
 
-            // 3. 启动定时补偿任务
+            // 3. 启动定时全量补偿任务
             startCompensationTask(registryConfig.getCompensationInterval());
             log.info("Etcd注册中心初始化完成");
         } catch (Exception e) {
@@ -60,8 +61,8 @@ public class EtcdRegistry implements Registry {
 
     @Override
     public void register(ServiceMetaInfo serviceMetaInfo) throws Exception {
-        if (localServiceRegisterSet.contains(serviceMetaInfo)) return;
         String serviceNodeKey = ETCD_ROOT_PATH + serviceMetaInfo.getServiceNodeKey();
+        if (leaseIdMap.containsKey(serviceNodeKey)) return;
         try {
             // 1. 创建租约
             long leaseId = leaseClient.grant(RpcApplication.getRpcConfig().getRegistry().getLeaseTime()).get().getID();
@@ -115,6 +116,8 @@ public class EtcdRegistry implements Registry {
     @Override
     public void destroy() {
         log.info("Etcd注册中心关闭中...");
+        // 立刻终止定期全量补偿任务
+        compensationScheduler.shutdownNow();
         // 清理本地注册节点,并取消续约
         leaseIdMap.forEach((k, v) -> {
             ByteSequence keyByteSequence = ByteSequence.from(k, StandardCharsets.UTF_8);
@@ -122,9 +125,9 @@ public class EtcdRegistry implements Registry {
             leaseClient.revoke(v);
         });
 
-        // 关闭资源
-        compensationScheduler.shutdownNow();
+        // 关闭缓存管理器
         cacheManager.destroy();
+        // 关闭Etcd客户端
         client.close();
         log.info("Etcd注册中心已关闭");
     }
@@ -141,16 +144,17 @@ public class EtcdRegistry implements Registry {
         leaseClient.keepAlive(leaseId, new StreamObserver<>() {
             @Override
             public void onNext(LeaseKeepAliveResponse response) {
-                log.debug("租约续期成功: {}", response.getID());
+                // log.debug("租约续期成功: {}", response.getID());
             }
 
             @Override
             public void onError(Throwable t) {
                 log.error("租约续期失败,尝试重新注册服务", t);
                 try {
-                    register(metaInfo); // 重新注册
-                } catch (Exception e) {
                     leaseIdMap.remove(metaInfo.getServiceNodeKey());
+                    register(metaInfo); // 重新注册
+                    log.info("服务重注册成功: {}", metaInfo.getServiceNodeKey());
+                } catch (Exception e) {
                     log.error("服务重注册失败", e);
                 }
             }
@@ -163,7 +167,8 @@ public class EtcdRegistry implements Registry {
     }
 
     /**
-     * 启动定期全量补偿本地注册节点
+     * 启动定期补偿本地注册节点
+     *
      * @param intervalMinutes 间隔时间
      */
     private void startCompensationTask(int intervalMinutes) {
@@ -171,7 +176,8 @@ public class EtcdRegistry implements Registry {
             try {
                 localServiceRegisterSet.forEach(serviceMetaInfo -> {
                     String serviceNodeKey = serviceMetaInfo.getServiceNodeKey();
-                    if (!leaseIdMap.containsKey(serviceMetaInfo.getServiceNodeKey())) {
+                    if (!leaseIdMap.containsKey(ETCD_ROOT_PATH + serviceMetaInfo.getServiceNodeKey())) {
+                        log.info("尝试补偿注册：{}", serviceNodeKey);
                         try {
                             register(serviceMetaInfo);
                         } catch (Exception e) {

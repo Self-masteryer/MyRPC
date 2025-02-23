@@ -60,4 +60,13 @@ public class ServiceMetaInfo {
         }
         return String.format("%s:%s", host, port);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof ServiceMetaInfo serviceMetaInfo) {
+            return this.getServiceNodeKey().equals(serviceMetaInfo.getServiceNodeKey());
+        }
+        return super.equals(o);
+    }
+
 }
