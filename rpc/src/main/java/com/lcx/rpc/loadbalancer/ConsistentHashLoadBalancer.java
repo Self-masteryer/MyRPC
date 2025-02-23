@@ -13,7 +13,7 @@ import java.util.TreeMap;
  */
 public class ConsistentHashLoadBalancer implements LoadBalancer {
 
-    // 一致性哈希环， 存放虚拟节点
+    // 一致性哈希环，存放虚拟节点
     private final TreeMap<Long, ServiceMetaInfo> virtualNodes = new TreeMap<>();
     // hash算法
     private final MessageDigest md = MessageDigest.getInstance("MD5");
@@ -24,11 +24,11 @@ public class ConsistentHashLoadBalancer implements LoadBalancer {
     }
 
     @Override
-    public ServiceMetaInfo select(Map<String, Object> params, List<ServiceMetaInfo> serviceMetaInfoList) {
-        if(serviceMetaInfoList == null || serviceMetaInfoList.isEmpty()) return null;
+    public ServiceMetaInfo select(Map<String, Object> params, List<ServiceMetaInfo> serviceMetaInfos) {
+        if(serviceMetaInfos == null || serviceMetaInfos.isEmpty()) return null;
 
         // 添加虚拟节点，构造一致性hash环
-        for (ServiceMetaInfo serviceMetaInfo : serviceMetaInfoList) {
+        for (ServiceMetaInfo serviceMetaInfo : serviceMetaInfos) {
             for(int i= 0;i<VIRTUAL_NODE_SIZE;i++) {
                 String key = serviceMetaInfo.getServiceNodeKey() + "#VN" + i;
                 virtualNodes.put(getHash(key), serviceMetaInfo);
@@ -39,6 +39,11 @@ public class ConsistentHashLoadBalancer implements LoadBalancer {
         Map.Entry<Long, ServiceMetaInfo> entry = virtualNodes.ceilingEntry(hash);
         if(entry == null) return virtualNodes.firstEntry().getValue();
         return entry.getValue();
+    }
+
+    @Override
+    public void refresh(String serviceKey, List<ServiceMetaInfo> serviceMetaInfos) {
+
     }
 
     /**

@@ -25,5 +25,5 @@ public final class ProtocolConstant {
     /**
      * 消息最大长度
      */
-    public static final int MESSAGE_MAX_LENGTH = 1024;
+    public static final int MESSAGE_MAX_LENGTH = 1024*8;
 }

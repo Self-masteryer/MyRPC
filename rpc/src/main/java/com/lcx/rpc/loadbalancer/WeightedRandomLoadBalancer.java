@@ -7,14 +7,20 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * 随机负载均衡器
+ * 加权随机负载均衡器：线性遍历法
  */
-public class RandomLoadBalancer implements LoadBalancer {
+public class WeightedRandomLoadBalancer implements LoadBalancer {
 
     @Override
     public ServiceMetaInfo select(Map<String, Object> params, List<ServiceMetaInfo> serviceMetaInfos) {
         if (serviceMetaInfos == null || serviceMetaInfos.isEmpty()) return null;
-        return serviceMetaInfos.get(ThreadLocalRandom.current().nextInt(serviceMetaInfos.size()));
+
+        int random = ThreadLocalRandom.current().nextInt(serviceMetaInfos.size());
+        for (ServiceMetaInfo serviceMetaInfo : serviceMetaInfos) {
+            if (random < serviceMetaInfo.getWeight()) return serviceMetaInfo;
+            random -= serviceMetaInfo.getWeight();
+        }
+        return serviceMetaInfos.get(0);
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.lcx.rpc.model.ServiceMetaInfo;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -11,13 +12,23 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class RoundRobinLoadBalancer implements LoadBalancer {
 
-    // 当前轮询下标
-    private final AtomicInteger currentIndex = new AtomicInteger(0);
+    // 当前轮询下标map
+    private final ConcurrentHashMap<String, AtomicInteger> currentIndexMap = new ConcurrentHashMap<>();
 
     @Override
-    public ServiceMetaInfo select(Map<String, Object> params, List<ServiceMetaInfo> serviceMetaInfoList) {
-        if(serviceMetaInfoList == null || serviceMetaInfoList.isEmpty()) return null;
-        int index = currentIndex.getAndIncrement() % serviceMetaInfoList.size() ;
-        return serviceMetaInfoList.get(index);
+    public ServiceMetaInfo select(Map<String, Object> params, List<ServiceMetaInfo> serviceMetaInfos) {
+        if (serviceMetaInfos == null || serviceMetaInfos.isEmpty()) return null;
+
+        String serviceName = (String) params.get("serviceName");
+        if (serviceName == null) serviceName = serviceMetaInfos.get(0).getName();
+
+        int index = currentIndexMap.computeIfAbsent(serviceName, key -> new AtomicInteger(0))
+                .getAndUpdate(i -> (i + 1) % serviceMetaInfos.size());
+        return serviceMetaInfos.get(index);
+    }
+
+    @Override
+    public void refresh(String serviceKey, List<ServiceMetaInfo> serviceMetaInfos) {
+
     }
 }
