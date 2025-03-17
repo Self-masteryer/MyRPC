@@ -30,17 +30,7 @@ public class VertxTcpServerHandler implements Handler<NetSocket> {
             } catch (IOException e) {
                 throw new RuntimeException("协议消息解码错误");
             }
-
-            RpcResponse response = new RpcResponse();
-            try {
-                rpcReqHandler.doResponse(requestProtocolMessage.getBody(), response);
-            } catch (Exception e) {
-                e.printStackTrace();
-                Throwable cause = e.getCause();
-                response.setMessage(cause.getMessage());
-                response.setException(e);
-            }
-
+            RpcResponse response = rpcReqHandler.doResponse(requestProtocolMessage.getBody());
             ProtocolMessage.Header header = requestProtocolMessage.getHeader();
             header.setMessageType((byte) ProtocolMessageTypeEnum.RESPONSE.getValue());
             ProtocolMessage<RpcResponse> responseProtocolMessage = new ProtocolMessage<>(header, response);

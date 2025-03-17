@@ -41,6 +41,6 @@ public class ProviderBootStrap {
             }
         }
         // 启动服务器
-        new NettyServer().doStart(8081,new DefaultRpcReqHandler());
+        new NettyServer(new DefaultRpcReqHandler()).doStart(8081);
     }
 }

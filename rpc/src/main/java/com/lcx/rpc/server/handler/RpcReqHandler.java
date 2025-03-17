@@ -14,22 +14,19 @@ public interface RpcReqHandler {
     /**
      * 响应Rpc请求
      *
-     * @param request  Rpc请求
-     * @param response Rpc响应
+     * @param request Rpc请求
      */
-    default void doResponse(RpcRequest request, RpcResponse response) {
+    default RpcResponse doResponse(RpcRequest request) {
         try {
             Class<?> clazz = LocalRegister.get(request.getInterfaceName());
             Method method = clazz.getMethod(request.getMethodName(), request.getParameterTypes());
             method.setAccessible(true);
             Object instance = getInstance(clazz);
             Object result = method.invoke(instance, request.getArgs());
-            response.setData(result);
+            return RpcResponse.success(result, method.getReturnType());
         } catch (Exception e) {
             e.printStackTrace();
-            Throwable cause = e.getCause();
-            response.setMessage(cause.getMessage());
-            response.setException(e);
+            return RpcResponse.fail();
         }
     }
 

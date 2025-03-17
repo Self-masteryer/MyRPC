@@ -27,15 +27,17 @@ public class NettyServer implements RpcServer {
     private NioEventLoopGroup workerGroup;
     private DefaultEventLoopGroup businessGroup;
     private Channel serverChannel;
+    private final RpcReqHandler rpcReqHandler;
 
     // 默认配置构造函数
-    public NettyServer() {
-        this(new ServerConfig());
+    public NettyServer(RpcReqHandler rpcReqHandler) {
+        this(new ServerConfig(),rpcReqHandler);
     }
 
     // 自定义配置构造函数
-    public NettyServer(ServerConfig config) {
+    public NettyServer(ServerConfig config, RpcReqHandler rpcReqHandler) {
         this.config = config;
+        this.rpcReqHandler = rpcReqHandler;
         validateConfig();
     }
 
@@ -47,7 +49,7 @@ public class NettyServer implements RpcServer {
     }
 
     @Override
-    public void doStart(int port, RpcReqHandler rpcReqHandler) {
+    public void doStart(int port) {
         config.setPort(port);
         initEventLoopGroups();
 

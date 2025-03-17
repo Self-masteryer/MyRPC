@@ -14,7 +14,7 @@ class ExampleSpringbootProviderApplicationTests {
 
     @Test
     void contextLoads() {
-        userService.getUserByName(new User("lcx"));
+        userService.getUserById(1);
     }
 
 }

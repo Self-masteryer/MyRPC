@@ -49,11 +49,16 @@ public class NettyClient {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) {
-                        ch.pipeline()
-                                .addLast(new ProtocolFrameDecoder())
-                                .addLast(new ProtocolMessageCodec())
-                                .addLast(new LoggingHandler(LogLevel.INFO))
-                                .addLast(new ClientHandler());
+                        ChannelPipeline pipeline = ch.pipeline();
+                        try {
+                            pipeline.addLast(new ProtocolFrameDecoder())
+                                    .addLast(new ProtocolMessageCodec())
+                                    .addLast(new LoggingHandler(LogLevel.INFO))
+                                    .addLast(new NettyClient.ClientHandler());
+                        } catch (Exception e) {
+                            log.error("Error initializing Netty client pipeline", e);
+                            throw e;  // 重新抛出异常，确保管道初始化失败时处理正确
+                        }
                     }
                 });
     }
