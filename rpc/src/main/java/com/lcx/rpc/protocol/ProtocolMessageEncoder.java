@@ -14,9 +14,10 @@ public class ProtocolMessageEncoder {
 
     /**
      * 译码
+     *
      * @param msg 消息
-     * @return 缓冲区
      * @param <T> 数据类型
+     * @return 缓冲区
      * @throws IOException I/O异常
      */
     public static <T> Buffer encode(ProtocolMessage<T> msg) throws IOException {
@@ -27,13 +28,13 @@ public class ProtocolMessageEncoder {
         Buffer buffer = Buffer.buffer();
         ProtocolMessage.Header header = msg.getHeader();
         buffer.appendInt(header.getMagicNum());
+        buffer.appendInt(header.getHeaderLength());
         buffer.appendByte(header.getVersion());
-        buffer.appendByte(header.getSerializerNum());
         buffer.appendByte(header.getMessageType());
-        buffer.appendByte(header.getStatus());
+        buffer.appendByte(header.getSerializerId());
         buffer.appendLong(header.getRequestId());
         // 获得序列化器
-        ProtocolMessageSerializerEnum serializerEnum = ProtocolMessageSerializerEnum.getByKey(header.getSerializerNum());
+        ProtocolMessageSerializerEnum serializerEnum = ProtocolMessageSerializerEnum.getByKey(header.getSerializerId());
         if (serializerEnum == null) {
             throw new RuntimeException("序列化协议不存在");
         }

@@ -15,12 +15,12 @@ public final class ProtocolConstant {
     /**
      * 消息体长度偏移量
      */
-    public static final int MESSAGE_BODY_LENGTH_OFFSET =16;
+    public static final int MESSAGE_BODY_LENGTH_OFFSET =19;
 
     /**
      * 协议首都长度
      */
-    public static final int PROTOCOL_HEADER_LENGTH = 20;
+    public static final int PROTOCOL_HEADER_LENGTH = 23;
 
     /**
      * 消息最大长度

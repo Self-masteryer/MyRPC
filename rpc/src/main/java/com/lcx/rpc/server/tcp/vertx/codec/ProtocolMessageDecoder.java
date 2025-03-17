@@ -30,17 +30,16 @@ public class ProtocolMessageDecoder {
         ProtocolMessage.Header header = ProtocolMessage.Header.builder()
                 .magicNum(magic)
                 .version(buffer.getByte(1))
-                .serializerNum(buffer.getByte(2))
+                .serializerId(buffer.getByte(2))
                 .messageType(buffer.getByte(3))
-                .status(buffer.getByte(4))
                 .requestId(buffer.getLong(5))
-                .length(buffer.getInt(13))
+                .bodyLength(buffer.getInt(13))
                 .build();
 
         // 反序列化
-        byte[] bodyBytes = buffer.getBytes(17, 17 + header.getLength());
+        byte[] bodyBytes = buffer.getBytes(17, 17 + header.getBodyLength());
         // 获取序列化器
-        ProtocolMessageSerializerEnum serializerEnum = ProtocolMessageSerializerEnum.getByKey(header.getSerializerNum());
+        ProtocolMessageSerializerEnum serializerEnum = ProtocolMessageSerializerEnum.getByKey(header.getSerializerId());
         if(serializerEnum == null) {
             throw new RuntimeException("序列化消息的协议不存在");
         }

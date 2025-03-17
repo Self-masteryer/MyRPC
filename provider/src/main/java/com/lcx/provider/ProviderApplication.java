@@ -19,4 +19,5 @@ public class ProviderApplication {
         // 服务提供者初始化
         ProviderBootStrap.init(serviceRegisterInfoList);
     }
+
 }

@@ -49,7 +49,7 @@ public class VertxTcpClient {
                 ProtocolMessage.Header header = ProtocolMessage.Header.builder()
                         .magicNum(ProtocolConstant.PROTOCOL_MAGIC)
                         .version(ProtocolConstant.PROTOCOL_VERSION)
-                        .serializerNum((byte) Objects.requireNonNull(ProtocolMessageSerializerEnum
+                        .serializerId((byte) Objects.requireNonNull(ProtocolMessageSerializerEnum
                                         .getByValue(RpcApplication.getRpcConfig().getSerializer()))
                                 .getKey())
                         .messageType((byte) ProtocolMessageTypeEnum.REQUEST.getValue())

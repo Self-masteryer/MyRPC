@@ -13,9 +13,7 @@ public class ExampleServiceImpl implements IExampleService {
     private IUserService userService;
 
     public void test() {
-        User user = new User();
-        user.setName("xx");
-        User result = userService.getUser(user);
-        System.out.println(result.getName());
+        User user = userService.getUserById(1);
+        System.out.println(user.getUserName());
     }
 }

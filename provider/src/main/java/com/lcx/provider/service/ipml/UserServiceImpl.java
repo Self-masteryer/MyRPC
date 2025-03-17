@@ -1,18 +1,31 @@
 package com.lcx.provider.service.ipml;
 
+import cn.hutool.core.lang.UUID;
 import com.lcx.common.model.User;
 import com.lcx.common.service.IUserService;
 
-import java.util.Objects;
+import java.util.Random;
 
 /**
  * 用户服务实现类
  */
 public class UserServiceImpl implements IUserService {
+
     @Override
-    public User getUser(User user) {
-        if (Objects.equals(user.getName(), "xx")) throw new RuntimeException();
-        System.out.println("用户名：" + user.getName());
-        return user;
+    public User getUserById(Integer uid) {
+        System.out.println("客户端查询了" + uid + "的用户");
+        // 模拟从数据库中取用户的行为
+        Random random = new Random();
+        return User.builder()
+                .userName(UUID.randomUUID().toString())
+                .id(uid)
+                .sex(random.nextBoolean())
+                .build();
+    }
+
+    @Override
+    public Integer insertUser(User user) {
+        System.out.println("插入数据成功" + user.getUserName());
+        return user.getId();
     }
 }

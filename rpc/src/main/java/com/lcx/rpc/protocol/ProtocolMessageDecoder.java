@@ -29,18 +29,18 @@ public class ProtocolMessageDecoder {
         // 解析请求头
         ProtocolMessage.Header header = ProtocolMessage.Header.builder()
                 .magicNum(magic)
-                .version(buffer.getByte(4))
-                .serializerNum(buffer.getByte(5))
-                .messageType(buffer.getByte(6))
-                .status(buffer.getByte(7))
-                .requestId(buffer.getLong(8))
-                .length(buffer.getInt(16))
+                .headerLength(buffer.getInt(4))
+                .version(buffer.getByte(8))
+                .messageType(buffer.getByte(9))
+                .serializerId(buffer.getByte(10))
+                .requestId(buffer.getLong(11))
+                .bodyLength(buffer.getInt(19))
                 .build();
 
         // 反序列化
-        byte[] bodyBytes = buffer.getBytes(PROTOCOL_HEADER_LENGTH, PROTOCOL_HEADER_LENGTH + header.getLength());
+        byte[] bodyBytes = buffer.getBytes(PROTOCOL_HEADER_LENGTH, PROTOCOL_HEADER_LENGTH + header.getBodyLength());
         // 获取序列化器
-        ProtocolMessageSerializerEnum serializerEnum = ProtocolMessageSerializerEnum.getByKey(header.getSerializerNum());
+        ProtocolMessageSerializerEnum serializerEnum = ProtocolMessageSerializerEnum.getByKey(header.getSerializerId());
         assert serializerEnum != null : "序列化消息的协议不存在";
 
         Serializer serializer = SerializerFactory.getSerializer(serializerEnum.getValue());

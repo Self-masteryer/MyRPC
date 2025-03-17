@@ -7,7 +7,7 @@ rpc:
   weight: 1
   mock: false
   serializer: jdk
-  loadBalancer: consistentHash
+  loadBalancer: weightedRoundRobin
   retryStrategy: fixedInterval
   tolerantStrategy: failFast
   registry:

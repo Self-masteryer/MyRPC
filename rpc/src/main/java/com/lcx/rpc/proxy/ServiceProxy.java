@@ -36,7 +36,7 @@ public class ServiceProxy implements InvocationHandler {
 
         // 构造请求
         RpcRequest rpcRequest = RpcRequest.builder()
-                .serviceName(serviceName)
+                .interfaceName(serviceName)
                 .methodName(method.getName())
                 .parameterTypes(method.getParameterTypes())
                 .args(args)
@@ -64,8 +64,13 @@ public class ServiceProxy implements InvocationHandler {
         RetryStrategy retryStrategy = RetryStrategyFactory.retryStrategy;
         RpcResponse response = null;
         try {
-            response = retryStrategy.doRetry(() ->
-                    NettyClient.doRequest(rpcRequest, finalServiceMetaInfo).get()
+            response = retryStrategy.doRetry(() -> {
+                        RpcResponse result = NettyClient.doRequest(rpcRequest, finalServiceMetaInfo).get();
+                        assert result != null : "response is null";
+                        Exception e = result.getException();
+                        if (e != null) throw new RuntimeException(e.getMessage(), e);
+                        return result;
+                    }
             );
         } catch (Exception e) {
             // 容错机制

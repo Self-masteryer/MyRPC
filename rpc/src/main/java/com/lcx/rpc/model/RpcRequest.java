@@ -19,7 +19,7 @@ public class RpcRequest implements Serializable {
     /**
      * 接口名称
      */
-    private String serviceName;
+    private String interfaceName;
 
     /**
      * 方法名称

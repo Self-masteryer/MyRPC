@@ -35,29 +35,31 @@ public class ProtocolMessage<T> {
          */
         private int magicNum;
         /**
+         * 消息头长度
+         */
+        private int headerLength;
+        /**
          * 版本号
          */
         private byte version;
-        /**
-         * 序列化器编号
-         */
-        private byte serializerNum;
         /**
          * 消息类型(请求/响应)
          */
         private byte messageType;
         /**
-         * 状态
+         * 序列化器Id
          */
-        private byte status;
+        private byte serializerId;
         /**
          * 消息id
          */
         private long requestId;
         /**
-         * 消息长度
+         * 消息体长度
          */
-        private int length;
+        private int bodyLength;
+
+        // 协议头扩展字段
     }
 
     public ProtocolMessage(Header header) {
@@ -74,7 +76,7 @@ public class ProtocolMessage<T> {
         ProtocolMessageSerializerEnum serializerEnum = ProtocolMessageSerializerEnum.getByValue(
                         RpcApplication.getRpcConfig().getSerializer());
         return getBasedHeader()
-                .serializerNum((byte) serializerEnum.getKey())
+                .serializerId((byte) serializerEnum.getKey())
                 .messageType((byte) ProtocolMessageTypeEnum.REQUEST.getValue());
     }
 }

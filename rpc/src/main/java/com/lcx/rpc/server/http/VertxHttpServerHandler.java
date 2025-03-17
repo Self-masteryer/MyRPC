@@ -39,7 +39,7 @@ public class VertxHttpServerHandler implements Handler<HttpServerRequest> {
                 return;
             }
             try {
-                Class<?> clazz = LocalRegister.get(rpcRequest.getServiceName());
+                Class<?> clazz = LocalRegister.get(rpcRequest.getInterfaceName());
                 Method method = clazz.getMethod(rpcRequest.getMethodName(), rpcRequest.getParameterTypes());
                 method.setAccessible(true);
                 Constructor<?> constructor = clazz.getDeclaredConstructor();

@@ -17,6 +17,11 @@ import java.io.Serializable;
 public class RpcResponse implements Serializable {
 
     /**
+     * 响应码
+     */
+    private int code;
+
+    /**
      * 响应信息
      */
     private String message;
@@ -27,7 +32,7 @@ public class RpcResponse implements Serializable {
     private Object data;
 
     /**
-     * 响应数据类型
+     * 数据类型
      */
     private Class<?> dataType;
 
@@ -35,4 +40,18 @@ public class RpcResponse implements Serializable {
      * 异常信息
      */
     private Exception exception;
+
+    /**
+     * 构造成功信息
+     */
+    public static RpcResponse success(Object data, Class<?> dataType) {
+        return RpcResponse.builder().code(200).data(data).dataType(dataType).build();
+    }
+
+    /**
+     * 构造失败信息
+     */
+    public static RpcResponse fail() {
+        return RpcResponse.builder().code(500).message("服务器发生错误").build();
+    }
 }

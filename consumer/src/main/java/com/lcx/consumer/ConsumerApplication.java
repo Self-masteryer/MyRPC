@@ -10,12 +10,10 @@ public class ConsumerApplication {
         ConsumerBootStrap.init();
         // 动态代理
         IUserService userService = ServiceProxyFactory.getProxy(IUserService.class);
-        User user = new User();
-        user.setName("lcx");
         // 调用服务
-        User newUser = userService.getUser(user);
-        if (newUser != null) {
-            System.out.println("用户名：" + newUser.getName());
+        User user = userService.getUserById(1);
+        if (user != null) {
+            System.out.println("用户名：" + user.getUserName());
         } else {
             System.out.println("用户不存在");
         }

@@ -19,13 +19,12 @@ public interface RpcReqHandler {
      */
     default void doResponse(RpcRequest request, RpcResponse response) {
         try {
-            Class<?> clazz = LocalRegister.get(request.getServiceName());
+            Class<?> clazz = LocalRegister.get(request.getInterfaceName());
             Method method = clazz.getMethod(request.getMethodName(), request.getParameterTypes());
             method.setAccessible(true);
             Object instance = getInstance(clazz);
             Object result = method.invoke(instance, request.getArgs());
             response.setData(result);
-            response.setDataType(method.getReturnType());
         } catch (Exception e) {
             e.printStackTrace();
             Throwable cause = e.getCause();

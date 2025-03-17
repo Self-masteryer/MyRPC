@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
  * 固定时间间隔-重试策略
  */
 @Slf4j
-public class FixedIntervalRetryStrategy implements RetryStrategy{
+public class FixedIntervalRetryStrategy implements RetryStrategy {
     @Override
     public RpcResponse doRetry(Callable<RpcResponse> callable) throws Exception {
         // 构建一个重试器，用于在指定条件下自动重试callable
@@ -22,6 +22,12 @@ public class FixedIntervalRetryStrategy implements RetryStrategy{
                 .withWaitStrategy(WaitStrategies.fixedWait(3L, TimeUnit.SECONDS))
                 // 设置停止策略为最多尝试3次后停止重试
                 .withStopStrategy(StopStrategies.stopAfterAttempt(3))
+                .withRetryListener(new RetryListener() {
+                    @Override
+                    public <V> void onRetry(Attempt<V> attempt) {
+                        log.debug("第{}次尝试,已过去:{}s", attempt.getAttemptNumber(), attempt.getDelaySinceFirstAttempt() / 1000);
+                    }
+                })
                 // 完成重试器的构建
                 .build();
         // 使用构建好的重试器来执行callable，自动处理重试逻辑

@@ -9,8 +9,10 @@ public interface IUserService {
 
     /**
      * 获取用户
-     * @param user
-     * @return
+     * @param uid 用户Id
+     * @return 用户
      */
-    User getUser(User user);
+    User getUserById(Integer uid);
+
+    Integer insertUser(User user);
 }

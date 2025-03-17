@@ -27,13 +27,13 @@ public class ProtocolMessageCodec extends MessageToMessageCodec<ByteBuf, Protoco
         ProtocolMessage.Header header = protocolMessage.getHeader();
         ByteBuf buffer = ctx.alloc().buffer();
         buffer.writeInt(header.getMagicNum())
+                .writeInt(header.getHeaderLength())
                 .writeByte(header.getVersion())
-                .writeByte(header.getSerializerNum())
                 .writeByte(header.getMessageType())
-                .writeByte(header.getStatus())
+                .writeByte(header.getSerializerId())
                 .writeLong(header.getRequestId());
 
-        ProtocolMessageSerializerEnum serializerEnum = ProtocolMessageSerializerEnum.getByKey(header.getSerializerNum());
+        ProtocolMessageSerializerEnum serializerEnum = ProtocolMessageSerializerEnum.getByKey(header.getSerializerId());
         assert serializerEnum != null : "不支持的序列化器";
 
         Serializer serializer = SerializerFactory.getSerializer(serializerEnum.getValue());
@@ -53,19 +53,19 @@ public class ProtocolMessageCodec extends MessageToMessageCodec<ByteBuf, Protoco
         // 解析请求头
         ProtocolMessage.Header header = ProtocolMessage.Header.builder()
                 .magicNum(magicNum)
+                .headerLength(byteBuf.readInt())
                 .version(byteBuf.readByte())
-                .serializerNum(byteBuf.readByte())
                 .messageType(byteBuf.readByte())
-                .status(byteBuf.readByte())
+                .serializerId(byteBuf.readByte())
                 .requestId(byteBuf.readLong())
-                .length(byteBuf.readInt())
+                .bodyLength(byteBuf.readInt())
                 .build();
 
-        byte[] body = new byte[header.getLength()];
+        byte[] body = new byte[header.getBodyLength()];
         byteBuf.readBytes(body);
 
         // 序列化器
-        ProtocolMessageSerializerEnum serializerEnum = ProtocolMessageSerializerEnum.getByKey(header.getSerializerNum());
+        ProtocolMessageSerializerEnum serializerEnum = ProtocolMessageSerializerEnum.getByKey(header.getSerializerId());
         assert serializerEnum != null : "序列化消息的协议不存在";
         Serializer serializer = SerializerFactory.getSerializer(serializerEnum.getValue());
 
@@ -83,7 +83,8 @@ public class ProtocolMessageCodec extends MessageToMessageCodec<ByteBuf, Protoco
                 list.add(new ProtocolMessage<>(header, response));
             }
             default -> throw new RuntimeException("暂不支持该消息类型");
-        };
+        }
+        ;
 
     }
 }

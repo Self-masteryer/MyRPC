@@ -29,12 +29,11 @@ public class ProtocolMessageEncoder {
         ProtocolMessage.Header header = msg.getHeader();
         buffer.appendInt(header.getMagicNum());
         buffer.appendByte(header.getVersion());
-        buffer.appendByte(header.getSerializerNum());
+        buffer.appendByte(header.getSerializerId());
         buffer.appendByte(header.getMessageType());
-        buffer.appendByte(header.getStatus());
         buffer.appendLong(header.getRequestId());
         // 获得序列化器
-        ProtocolMessageSerializerEnum serializerEnum = ProtocolMessageSerializerEnum.getByKey(header.getSerializerNum());
+        ProtocolMessageSerializerEnum serializerEnum = ProtocolMessageSerializerEnum.getByKey(header.getSerializerId());
         if (serializerEnum == null) {
             throw new RuntimeException("序列化协议不存在");
         }

@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Objects;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -15,26 +17,32 @@ public class ServiceMetaInfo {
     /**
      * 服务名称
      */
+    @Builder.Default
     private String name = "service";
     /**
      * 服务版本
      */
+    @Builder.Default
     private String version = "1.0.0";
     /**
      * 服务地址
      */
+    @Builder.Default
     private String host = "127.0.0.1";
     /**
      * 服务端口
      */
+    @Builder.Default
     private Integer port = 8080;
     /**
      * 服务分组
      */
+    @Builder.Default
     private String group = "default";
     /**
      * 权重
      */
+    @Builder.Default
     private Integer weight = 1;
 
     /**
@@ -69,4 +77,8 @@ public class ServiceMetaInfo {
         return super.equals(o);
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, version, host, port, group, weight);
+    }
 }
