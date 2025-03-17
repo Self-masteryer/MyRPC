@@ -44,8 +44,8 @@ public class RpcResponse implements Serializable {
     /**
      * 构造成功信息
      */
-    public static RpcResponse success(Object data, Class<?> dataType) {
-        return RpcResponse.builder().code(200).data(data).dataType(dataType).build();
+    public static RpcResponse success(Object data) {
+        return RpcResponse.builder().code(200).data(data).dataType(data.getClass()).build();
     }
 
     /**

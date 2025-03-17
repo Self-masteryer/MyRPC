@@ -23,7 +23,7 @@ public interface RpcReqHandler {
             method.setAccessible(true);
             Object instance = getInstance(clazz);
             Object result = method.invoke(instance, request.getArgs());
-            return RpcResponse.success(result, method.getReturnType());
+            return RpcResponse.success(result);
         } catch (Exception e) {
             e.printStackTrace();
             return RpcResponse.fail();

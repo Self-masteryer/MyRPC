@@ -11,8 +11,7 @@ import io.etcd.jetcd.Watch;
 import io.etcd.jetcd.options.GetOption;
 import io.etcd.jetcd.options.WatchOption;
 import io.etcd.jetcd.watch.WatchEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -23,8 +22,8 @@ import java.util.stream.Collectors;
 /**
  * ETCD缓存管理实现
  */
+@Slf4j
 public class EtcdCacheManager extends RegistryCacheManager {
-    private static final Logger log = LoggerFactory.getLogger(EtcdCacheManager.class);
     private final KV kvClient;
     private final Watch watchClient;
     // 服务键 -> Watcher

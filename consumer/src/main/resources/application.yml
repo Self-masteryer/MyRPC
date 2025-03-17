@@ -6,13 +6,13 @@ rpc:
   port: 8082
   weight: 1
   mock: false
-  serializer: jdk
-  loadBalancer: weightedRoundRobin
+  serializer: json
+  loadBalancer: random
   retryStrategy: fixedInterval
   tolerantStrategy: failFast
   registry:
-    type: etcd
-    address: "http://localhost:2379"
+    type: zookeeper
+    address: "localhost:2181" # http://localhost:2379
     timeout: 5000
     leaseTime: 30
     compensationInterval: 1

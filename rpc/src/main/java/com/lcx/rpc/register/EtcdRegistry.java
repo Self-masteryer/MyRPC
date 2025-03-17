@@ -25,7 +25,7 @@ import java.util.concurrent.*;
 public class EtcdRegistry implements Registry {
 
     // 键值根路径
-    public static final String ROOT_PATH = "/rpc/";
+    public static final String ROOT_PATH = "/MyRPC/";
     // Etcd 客户端
     private final Client client;
     private final KV kvClient;

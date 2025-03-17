@@ -28,7 +28,7 @@ import static io.vertx.core.http.impl.HttpClientConnection.log;
  */
 public class ZooKeeperRegistry implements Registry {
 
-    public static final String ROOT_PATH = "/rpc/zk";
+    public static final String ROOT_PATH = "/MyRPC";
 
     private CuratorFramework client;
     private ServiceDiscovery<ServiceMetaInfo> serviceDiscovery;
@@ -45,7 +45,9 @@ public class ZooKeeperRegistry implements Registry {
         client = CuratorFrameworkFactory
                 .builder()
                 .connectString(registryConfig.getAddress())
-                .retryPolicy(new ExponentialBackoffRetry(Math.toIntExact(registryConfig.getTimeout()), 3))
+                .sessionTimeoutMs(40000) // 设置会话超时时间
+                // zk还会根据minSessionTimeout与maxSessionTimeout两个参数重新调整最后的超时值。默认分别为tickTime 的2倍和20倍
+                .retryPolicy(new ExponentialBackoffRetry(1000, 3)) // 指数时间重试
                 .build();
         // 构建 serviceDiscovery 实例
         serviceDiscovery = ServiceDiscoveryBuilder.builder(ServiceMetaInfo.class)
@@ -94,6 +96,7 @@ public class ZooKeeperRegistry implements Registry {
             if (cachedServiceMetaInfoList != null) return cachedServiceMetaInfoList;
 
             try {
+                // List<String> strings = client.getChildren().forPath("/" + serviceKey);
                 // 查询服务信息
                 Collection<ServiceInstance<ServiceMetaInfo>> serviceInstanceList = serviceDiscovery.queryForInstances(serviceKey);
                 // 解析服务信息
@@ -113,7 +116,6 @@ public class ZooKeeperRegistry implements Registry {
         String watchKey = ROOT_PATH + "/" + serviceNodeKey;
         if (!watchingKeySet.contains(watchKey)) {
             CuratorCache curatorCache = CuratorCache.build(client, watchKey);
-            curatorCache.start();
             curatorCache.listenable().addListener(
                     CuratorCacheListener
                             .builder()
@@ -121,6 +123,7 @@ public class ZooKeeperRegistry implements Registry {
                             .forChanges(((oldNode, node) -> registryServiceCache.clearCache()))
                             .build()
             );
+            curatorCache.start();
         }
     }
 
@@ -152,8 +155,7 @@ public class ZooKeeperRegistry implements Registry {
     private ServiceInstance<ServiceMetaInfo> buildServiceInstance(ServiceMetaInfo serviceMetaInfo) {
         String serviceAddress = String.format("%s:%s", serviceMetaInfo.getHost(), serviceMetaInfo.getPort());
         try {
-            return ServiceInstance
-                    .<ServiceMetaInfo>builder()
+            return ServiceInstance.<ServiceMetaInfo>builder()
                     .id(serviceAddress)
                     .name(serviceMetaInfo.getServiceKey())
                     .address(serviceAddress)
