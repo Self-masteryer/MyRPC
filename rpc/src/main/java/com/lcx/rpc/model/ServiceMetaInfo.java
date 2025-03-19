@@ -15,7 +15,7 @@ import java.util.Objects;
 @AllArgsConstructor
 public class ServiceMetaInfo {
     /**
-     * 服务名称
+     * 服务名称(接口名称)
      */
     @Builder.Default
     private String name = "service";
@@ -44,6 +44,9 @@ public class ServiceMetaInfo {
      */
     @Builder.Default
     private Integer weight = 1;
+
+    @Builder.Default
+    private Boolean canRetry = false;
 
     /**
      * 获取服务键

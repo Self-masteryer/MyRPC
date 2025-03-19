@@ -24,8 +24,8 @@ public interface RpcReqHandler {
             Object instance = getInstance(clazz);
             Object result = method.invoke(instance, request.getArgs());
             return RpcResponse.success(result);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception e) { // 执行过程中发生异常
+            // todo 是否传回异常
             return RpcResponse.fail();
         }
     }

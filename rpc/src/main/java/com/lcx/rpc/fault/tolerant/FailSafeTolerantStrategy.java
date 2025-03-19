@@ -9,10 +9,10 @@ import java.util.Map;
  * 静默处理-容错策略
  */
 @Slf4j
-public class FailSafeTolerantStrategy implements TolerantStrategy{
+public class FailSafeTolerantStrategy implements TolerantStrategy {
     @Override
     public RpcResponse doTolerant(Map<String, Object> context, Exception e) {
-        log.info("静默处理异常",e);
-        return new RpcResponse();
+        log.info("静默处理异常", e);
+        return RpcResponse.fail();
     }
 }

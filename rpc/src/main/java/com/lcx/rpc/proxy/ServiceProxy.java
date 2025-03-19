@@ -60,28 +60,22 @@ public class ServiceProxy implements InvocationHandler {
         Map<String, Object> params = Map.of("serviceKey", serviceMetaInfo.getServiceKey(), "host", rpcConfig.getHost());
         final ServiceMetaInfo finalServiceMetaInfo = loadBalancer.select(params, new ArrayList<>(serviceMetaInfoList));
 
-        // 重试
-        RetryStrategy retryStrategy = RetryStrategyFactory.retryStrategy;
-        RpcResponse response = null;
+        RpcResponse response;
         try {
-            response = retryStrategy.doRetry(() -> {
-                        RpcResponse result = NettyClient.doRequest(rpcRequest, finalServiceMetaInfo).get();
-                        assert result != null : "response is null";
-                        Exception e = result.getException();
-                        if (e != null) throw new RuntimeException(e.getMessage(), e);
-                        return result;
-                    }
-            );
+            if (finalServiceMetaInfo.getCanRetry()) { // 可重试
+                RetryStrategy retryStrategy = RetryStrategyFactory.retryStrategy;
+                response = retryStrategy.doRetry(() ->
+                        NettyClient.doRequest(rpcRequest, finalServiceMetaInfo).get()
+                );
+            } else { // 不可重试
+                response = NettyClient.doRequest(rpcRequest, finalServiceMetaInfo).get();
+            }
+            if (response.getCode() == 500) throw new RuntimeException();
         } catch (Exception e) {
             // 容错机制
             TolerantStrategy tolerantStrategy = TolerantStrategyFactory.tolerantStrategy;
-            tolerantStrategy.doTolerant(null, e);
+            response = tolerantStrategy.doTolerant(null, e);
         }
-
-        assert response != null : "response is null";
-        Exception e = response.getException();
-        if (e != null) throw new RuntimeException(e.getMessage(), e);
-
         return response.getData();
 //        // 基于http发送rpc请求
 //        HttpResponse httpResponse = HttpRequest.post(serviceMetaInfo.getServiceAddress())

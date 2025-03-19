@@ -53,7 +53,6 @@ public class NettyClient {
                         try {
                             pipeline.addLast(new ProtocolFrameDecoder())
                                     .addLast(new ProtocolMessageCodec())
-                                    .addLast(new LoggingHandler(LogLevel.INFO))
                                     .addLast(new NettyClient.ClientHandler());
                         } catch (Exception e) {
                             log.error("Error initializing Netty client pipeline", e);
@@ -80,7 +79,7 @@ public class NettyClient {
             if (resultFuture.completeExceptionally(new TimeoutException("Request timeout"))) {
                 PENDING_REQUESTS.remove(requestId);
             }
-        }, 30, TimeUnit.SECONDS);
+        }, 20, TimeUnit.SECONDS);
 
         getOrCreateChannel(metaInfo).addListener(future -> {
             if (future.isSuccess()) {
@@ -107,7 +106,8 @@ public class NettyClient {
         synchronized (CHANNEL_CACHE) {
             Channel existing = CHANNEL_CACHE.get(metaInfo);
             if (existing != null && existing.isActive()) {
-                return new DefaultChannelPromise(existing);
+                // 返回一个已成功的 ChannelFuture
+                return existing.newSucceededFuture();
             }
 
             ChannelFuture future = BOOTSTRAP.connect(metaInfo.getHost(), metaInfo.getPort());

@@ -35,6 +35,7 @@ public class EtcdRegistry implements Registry {
     private final Set<ServiceMetaInfo> localServiceRegisterSet = new CopyOnWriteArraySet<>();
     // 缓存管理
     private final RegistryCacheManager cacheManager;
+    // 定时全量补偿线程池
     private final ScheduledExecutorService compensationScheduler = Executors.newSingleThreadScheduledExecutor();
 
     {

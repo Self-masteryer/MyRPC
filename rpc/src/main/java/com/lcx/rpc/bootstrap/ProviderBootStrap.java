@@ -33,6 +33,7 @@ public class ProviderBootStrap {
                     .host(rpcConfig.getHost())
                     .port(rpcConfig.getPort())
                     .weight(rpcConfig.getWeight())
+                    .canRetry(serviceRegisterInfo.getCanRetry())
                     .build();
             try {
                 registry.register(serviceMetaInfo);

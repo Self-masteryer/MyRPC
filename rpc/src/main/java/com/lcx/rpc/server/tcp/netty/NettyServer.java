@@ -84,7 +84,6 @@ public class NettyServer implements RpcServer {
                         ch.pipeline()
                                 .addLast(new ProtocolFrameDecoder())
                                 .addLast(new ProtocolMessageCodec())
-                                .addLast(new LoggingHandler(LogLevel.INFO))
                                 .addLast(businessGroup, new RpcServerHandler(rpcReqHandler));
                     }
                 });
