@@ -43,6 +43,7 @@ public class JsonSerializer implements Serializer {
 
         // 循环处理每个参数的类型
         for (int i = 0; i < parameterTypes.length; i++) {
+            if (args[i] == null) continue;
             Class<?> clazz = parameterTypes[i];
             // 如果类型不同，则重新处理一下类型
             if (!clazz.isAssignableFrom(args[i].getClass())) {
@@ -62,9 +63,12 @@ public class JsonSerializer implements Serializer {
      * @throws IOException IO异常
      */
     private <T> T handleResponse(RpcResponse rpcResponse, Class<T> type) throws IOException {
-        // 处理响应数据
-        byte[] dataBytes = OBJECT_MAPPER.writeValueAsBytes(rpcResponse.getData());
-        rpcResponse.setData(OBJECT_MAPPER.readValue(dataBytes, rpcResponse.getDataType()));
+        Object data = rpcResponse.getData();
+        if (data != null) {
+            // 处理响应数据
+            byte[] dataBytes = OBJECT_MAPPER.writeValueAsBytes(data);
+            rpcResponse.setData(OBJECT_MAPPER.readValue(dataBytes, rpcResponse.getDataType()));
+        }
         return type.cast(rpcResponse);
     }
 }
