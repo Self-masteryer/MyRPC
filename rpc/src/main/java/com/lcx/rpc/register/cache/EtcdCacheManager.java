@@ -3,7 +3,7 @@ package com.lcx.rpc.register.cache;
 import cn.hutool.json.JSONUtil;
 import com.lcx.rpc.config.RpcApplication;
 import com.lcx.rpc.model.ServiceMetaInfo;
-import com.lcx.rpc.register.EtcdRegistry;
+import com.lcx.rpc.register.impl.EtcdRegistry;
 import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.KV;
 import io.etcd.jetcd.KeyValue;

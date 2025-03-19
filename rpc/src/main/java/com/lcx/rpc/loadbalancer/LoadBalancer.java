@@ -25,4 +25,5 @@ public interface LoadBalancer {
      */
     void refresh(String serviceKey, List<ServiceMetaInfo> serviceMetaInfos);
 
+
 }

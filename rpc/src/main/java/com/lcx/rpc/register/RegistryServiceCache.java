@@ -13,17 +13,17 @@ public class RegistryServiceCache {
     List<ServiceMetaInfo> serviceCache;
 
     // 写缓存
-    void writeCache(List<ServiceMetaInfo> serviceCache) {
+    public void writeCache(List<ServiceMetaInfo> serviceCache) {
         this.serviceCache = serviceCache;
     }
 
     // 读缓存
-    List<ServiceMetaInfo> readCache() {
+    public List<ServiceMetaInfo> readCache() {
         return serviceCache;
     }
 
     // 清除缓存
-    void clearCache() {
+    public void clearCache() {
         serviceCache = null;
     }
 }

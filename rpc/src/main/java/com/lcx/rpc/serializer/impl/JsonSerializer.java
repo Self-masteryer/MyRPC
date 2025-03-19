@@ -1,8 +1,9 @@
-package com.lcx.rpc.serializer;
+package com.lcx.rpc.serializer.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lcx.rpc.model.RpcRequest;
 import com.lcx.rpc.model.RpcResponse;
+import com.lcx.rpc.serializer.Serializer;
 
 import java.io.IOException;
 

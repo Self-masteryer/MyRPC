@@ -1,5 +1,6 @@
-package com.lcx.rpc.fault.tolerant;
+package com.lcx.rpc.fault.tolerant.impl;
 
+import com.lcx.rpc.fault.tolerant.TolerantStrategy;
 import com.lcx.rpc.model.RpcResponse;
 import lombok.extern.slf4j.Slf4j;
 

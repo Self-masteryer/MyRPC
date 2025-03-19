@@ -1,5 +1,6 @@
-package com.lcx.rpc.loadbalancer;
+package com.lcx.rpc.loadbalancer.impl;
 
+import com.lcx.rpc.loadbalancer.LoadBalancer;
 import com.lcx.rpc.model.ServiceMetaInfo;
 
 import java.util.List;

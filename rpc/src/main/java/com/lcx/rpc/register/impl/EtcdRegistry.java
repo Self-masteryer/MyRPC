@@ -1,10 +1,11 @@
-package com.lcx.rpc.register;
+package com.lcx.rpc.register.impl;
 
 import cn.hutool.json.JSONUtil;
 import com.lcx.rpc.common.exception.RegistryException;
 import com.lcx.rpc.config.RegistryConfig;
 import com.lcx.rpc.config.RpcApplication;
 import com.lcx.rpc.model.ServiceMetaInfo;
+import com.lcx.rpc.register.Registry;
 import com.lcx.rpc.register.cache.EtcdCacheManager;
 import com.lcx.rpc.register.cache.RegistryCacheManager;
 import io.etcd.jetcd.*;

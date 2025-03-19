@@ -1,5 +1,6 @@
-package com.lcx.rpc.loadbalancer;
+package com.lcx.rpc.loadbalancer.impl;
 
+import com.lcx.rpc.loadbalancer.LoadBalancer;
 import com.lcx.rpc.model.ServiceMetaInfo;
 
 import java.security.MessageDigest;
@@ -25,11 +26,11 @@ public class ConsistentHashLoadBalancer implements LoadBalancer {
 
     @Override
     public ServiceMetaInfo select(Map<String, Object> params, List<ServiceMetaInfo> serviceMetaInfos) {
-        if(serviceMetaInfos == null || serviceMetaInfos.isEmpty()) return null;
+        if (serviceMetaInfos == null || serviceMetaInfos.isEmpty()) return null;
 
         // 添加虚拟节点，构造一致性hash环
         for (ServiceMetaInfo serviceMetaInfo : serviceMetaInfos) {
-            for(int i= 0;i<VIRTUAL_NODE_SIZE;i++) {
+            for (int i = 0; i < VIRTUAL_NODE_SIZE; i++) {
                 String key = serviceMetaInfo.getServiceNodeKey() + "#VN" + i;
                 virtualNodes.put(getHash(key), serviceMetaInfo);
             }
@@ -37,7 +38,7 @@ public class ConsistentHashLoadBalancer implements LoadBalancer {
 
         long hash = getHash(params.toString());
         Map.Entry<Long, ServiceMetaInfo> entry = virtualNodes.ceilingEntry(hash);
-        if(entry == null) return virtualNodes.firstEntry().getValue();
+        if (entry == null) return virtualNodes.firstEntry().getValue();
         return entry.getValue();
     }
 

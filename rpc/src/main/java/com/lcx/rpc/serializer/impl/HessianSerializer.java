@@ -1,7 +1,8 @@
-package com.lcx.rpc.serializer;
+package com.lcx.rpc.serializer.impl;
 
 import com.caucho.hessian.io.HessianInput;
 import com.caucho.hessian.io.HessianOutput;
+import com.lcx.rpc.serializer.Serializer;
 
 import java.io.ByteArrayInputStream;
 
