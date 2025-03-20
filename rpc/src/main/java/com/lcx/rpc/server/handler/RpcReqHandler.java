@@ -1,5 +1,6 @@
 package com.lcx.rpc.server.handler;
 
+import com.lcx.rpc.fault.restrictor.provider.RestrictorProvider;
 import com.lcx.rpc.model.RpcRequest;
 import com.lcx.rpc.model.RpcResponse;
 import com.lcx.rpc.register.LocalRegister;
@@ -19,6 +20,11 @@ public interface RpcReqHandler {
     default RpcResponse doResponse(RpcRequest request) {
         try {
             Class<?> clazz = LocalRegister.get(request.getInterfaceName());
+
+            String serviceName = clazz.getName();
+            boolean token = RestrictorProvider.getRateLimit(serviceName).getToken();
+            if(!token) return RpcResponse.fail();
+
             Method method = clazz.getMethod(request.getMethodName(), request.getParameterTypes());
             method.setAccessible(true);
             Object instance = getInstance(clazz);
