@@ -6,6 +6,8 @@ import java.lang.reflect.Method;
 import cn.hutool.core.collection.CollUtil;
 import com.lcx.rpc.config.RpcApplication;
 import com.lcx.rpc.config.RpcConfig;
+import com.lcx.rpc.fault.circuitBreaker.CircuitBreaker;
+import com.lcx.rpc.fault.circuitBreaker.CircuitBreakerProvider;
 import com.lcx.rpc.fault.retry.RetryStrategy;
 import com.lcx.rpc.fault.retry.RetryStrategyFactory;
 import com.lcx.rpc.fault.tolerant.TolerantStrategy;
@@ -61,7 +63,11 @@ public class ServiceProxy implements InvocationHandler {
         final ServiceMetaInfo finalServiceMetaInfo = loadBalancer.select(params, new ArrayList<>(serviceMetaInfoList));
 
         RpcResponse response;
+        CircuitBreaker circuitBreaker = CircuitBreakerProvider.getCircuitBreaker(finalServiceMetaInfo.getName());
         try {
+            // 熔断判断
+            if (!circuitBreaker.allowRequest()) throw new RuntimeException("熔断");
+
             if (finalServiceMetaInfo.getCanRetry()) { // 可重试
                 RetryStrategy retryStrategy = RetryStrategyFactory.retryStrategy;
                 response = retryStrategy.doRetry(() ->
@@ -71,19 +77,13 @@ public class ServiceProxy implements InvocationHandler {
                 response = NettyClient.doRequest(rpcRequest, finalServiceMetaInfo).get();
             }
             if (response.getCode() == 500) throw new RuntimeException();
+            circuitBreaker.recordSuccess();
         } catch (Exception e) {
+            circuitBreaker.recordFailure();
             // 容错机制
             TolerantStrategy tolerantStrategy = TolerantStrategyFactory.tolerantStrategy;
             response = tolerantStrategy.doTolerant(null, e);
         }
         return response.getData();
-//        // 基于http发送rpc请求
-//        HttpResponse httpResponse = HttpRequest.post(serviceMetaInfo.getServiceAddress())
-//                .body(bodyBytes)
-//                .execute();
-//        byte[] result = httpResponse.bodyBytes();
-//        // 反序列化
-//        RpcResponse rpcResponse = serializer.deserialize(result, RpcResponse.class);
-//        return rpcResponse.getData();
     }
 }
