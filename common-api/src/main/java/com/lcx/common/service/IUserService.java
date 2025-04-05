@@ -1,6 +1,6 @@
 package com.lcx.common.service;
 
-import com.lcx.common.model.User;
+import com.lcx.common.domain.User;
 
 /**
  * 用户服务接口

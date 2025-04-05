@@ -1,0 +1,4 @@
+kryo=com.lcx.rpc.protocol.serializer.impl.KryoSerializer
+hessian=com.lcx.rpc.protocol.serializer.impl.HessianSerializer
+json=com.lcx.rpc.protocol.serializer.impl.JsonSerializer
+jdk=com.lcx.rpc.protocol.serializer.impl.JdkSerializer

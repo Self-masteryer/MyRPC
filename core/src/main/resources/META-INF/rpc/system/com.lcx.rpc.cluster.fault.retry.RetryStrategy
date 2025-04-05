@@ -1,0 +1,2 @@
+no=com.lcx.rpc.cluster.fault.retry.impl.NoRetryStrategy
+fixedInterval=com.lcx.rpc.cluster.fault.retry.impl.FixedIntervalRetryStrategy

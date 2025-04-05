@@ -1,4 +1,0 @@
-failFast=com.lcx.rpc.fault.tolerant.impl.FailFastTolerantStrategy
-failSafe=com.lcx.rpc.fault.tolerant.impl.FailSafeTolerantStrategy
-failBack=com.lcx.rpc.fault.tolerant.impl.FailBackTolerantStrategy
-failOver=com.lcx.rpc.fault.tolerant.impl.FailOverTolerantStrategy

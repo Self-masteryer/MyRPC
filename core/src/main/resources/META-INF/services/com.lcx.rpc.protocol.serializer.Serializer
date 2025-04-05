@@ -1,0 +1,2 @@
+com.lcx.rpc.protocol.serializer.impl.KryoSerializer
+com.lcx.rpc.protocol.serializer.impl.HessianSerializer

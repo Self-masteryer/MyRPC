@@ -1,5 +1,0 @@
-roundRobin=com.lcx.rpc.loadbalancer.impl.RoundRobinLoadBalancer
-weightedRoundRobin=com.lcx.rpc.loadbalancer.impl.WeightedRoundRobinLoadBalancer
-random=com.lcx.rpc.loadbalancer.impl.RandomLoadBalancer
-weightedRandom=com.lcx.rpc.loadbalancer.impl.WeightedRandomLoadBalancer
-consistentHash=com.lcx.rpc.loadbalancer.impl.ConsistentHashLoadBalancer

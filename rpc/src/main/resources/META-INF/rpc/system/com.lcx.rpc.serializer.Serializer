@@ -1,4 +1,0 @@
-kryo=com.lcx.rpc.serializer.impl.KryoSerializer
-hessian=com.lcx.rpc.serializer.impl.HessianSerializer
-json=com.lcx.rpc.serializer.impl.JsonSerializer
-jdk=com.lcx.rpc.serializer.impl.JdkSerializer

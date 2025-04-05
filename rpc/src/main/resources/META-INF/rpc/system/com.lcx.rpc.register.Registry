@@ -1,2 +1,0 @@
-etcd=com.lcx.rpc.register.impl.EtcdRegistry
-zookeeper=com.lcx.rpc.register.impl.ZooKeeperRegistry

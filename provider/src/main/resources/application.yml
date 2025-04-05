@@ -11,8 +11,8 @@ rpc:
   retryStrategy: fixedInterval
   tolerantStrategy: failFast
   registry:
-    type: zookeeper # etcd
-    address: "localhost:2181" # http://localhost:2379
+    type: etcd # zookeeper
+    address: "http://localhost:2379" # localhost:2181
     timeout: 5000
     leaseTime: 30
     compensationInterval: 1

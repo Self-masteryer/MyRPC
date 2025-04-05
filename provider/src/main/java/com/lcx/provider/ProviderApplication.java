@@ -3,7 +3,7 @@ package com.lcx.provider;
 import com.lcx.common.service.IUserService;
 import com.lcx.provider.service.ipml.UserServiceImpl;
 import com.lcx.rpc.bootstrap.ProviderBootStrap;
-import com.lcx.rpc.model.ServiceRegisterInfo;
+import com.lcx.rpc.common.model.ServiceRegisterInfo;
 
 import java.util.ArrayList;
 import java.util.List;

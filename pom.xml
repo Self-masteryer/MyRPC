@@ -12,7 +12,7 @@
         <module>common-api</module>
         <module>consumer</module>
         <module>provider</module>
-        <module>rpc</module>
+        <module>core</module>
     </modules>
 
     <properties>
