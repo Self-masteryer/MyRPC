@@ -4,8 +4,8 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
 import cn.hutool.core.collection.CollUtil;
-import com.lcx.rpc.bootstrap.config.RpcApplication;
-import com.lcx.rpc.bootstrap.config.RpcConfig;
+import com.lcx.rpc.bootstrap.config.MyRpcApplication;
+import com.lcx.rpc.bootstrap.config.MyRpcConfig;
 import com.lcx.rpc.cluster.fault.circuitBreaker.CircuitBreaker;
 import com.lcx.rpc.cluster.fault.circuitBreaker.CircuitBreakerProvider;
 import com.lcx.rpc.cluster.fault.retry.RetryStrategy;
@@ -33,7 +33,7 @@ import java.util.Map;
 public class ServiceProxy implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Exception {
-        RpcConfig rpcConfig = RpcApplication.getRpcConfig();
+        MyRpcConfig myRpcConfig = MyRpcApplication.getRpcConfig();
         String serviceName = method.getDeclaringClass().getName();
 
         // 构造请求
@@ -47,7 +47,7 @@ public class ServiceProxy implements InvocationHandler {
         // 服务发现
         ServiceMetaInfo serviceMetaInfo = ServiceMetaInfo.builder()
                 .name(serviceName)
-                .version(rpcConfig.getVersion())
+                .version(myRpcConfig.getVersion())
                 .build();
         Registry registry = RegistryFactory.registry;
         Collection<ServiceMetaInfo> serviceMetaInfoList = registry.serviceDiscovery(serviceMetaInfo.getServiceKey());
@@ -59,7 +59,7 @@ public class ServiceProxy implements InvocationHandler {
 
         // 负载均衡
         LoadBalancer loadBalancer = LoadBalancerFactory.loadBalancer;
-        Map<String, Object> params = Map.of("serviceKey", serviceMetaInfo.getServiceKey(), "host", rpcConfig.getHost());
+        Map<String, Object> params = Map.of("serviceKey", serviceMetaInfo.getServiceKey(), "host", myRpcConfig.getServer().getHost());
         final ServiceMetaInfo finalServiceMetaInfo = loadBalancer.select(params, new ArrayList<>(serviceMetaInfoList));
 
         RpcResponse response;

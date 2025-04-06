@@ -1,18 +1,25 @@
-rpc:
+myRPC:
   env: dev
   name: IUserService
   version: 1.0.0
-  host: 127.0.0.1
-  port: 8081
   weight: 1
   mock: false
-  serializer: json
-  loadBalancer: weightedRoundRobin
-  retryStrategy: fixedInterval
-  tolerantStrategy: failFast
-  registry:
-    type: etcd # zookeeper
-    address: "http://localhost:2379" # localhost:2181
-    timeout: 5000
-    leaseTime: 30
-    compensationInterval: 1
+  cluster:
+    registry:
+      type: etcd # zookeeper
+      address: "http://localhost:2379" # localhost:2181
+      timeout: 5000
+      leaseTime: 30
+    loadBalancer: weightedRoundRobin
+    retryStrategy: fixedInterval
+    tolerantStrategy: failFast
+  protocol:
+    serializer: json
+  server:
+    host: 127.0.0.1
+    port: 8081
+    group:
+      bossThreads: 1
+      workerThreads: 16
+      businessThreads: 32
+

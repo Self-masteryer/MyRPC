@@ -3,7 +3,7 @@ package com.lcx.rpc.cluster.register.impl;
 import cn.hutool.core.collection.ConcurrentHashSet;
 
 import com.lcx.rpc.bootstrap.config.RegistryConfig;
-import com.lcx.rpc.bootstrap.config.RpcApplication;
+import com.lcx.rpc.bootstrap.config.MyRpcApplication;
 import com.lcx.rpc.cluster.register.Registry;
 import com.lcx.rpc.common.model.ServiceMetaInfo;
 import com.lcx.rpc.cluster.register.RegistryServiceCache;
@@ -42,7 +42,7 @@ public class ZooKeeperRegistry implements Registry {
     private final Set<String> watchingKeySet = new ConcurrentHashSet<>();
 
     {
-        RegistryConfig registryConfig = RpcApplication.getRpcConfig().getRegistry();
+        RegistryConfig registryConfig = MyRpcApplication.getRpcConfig().getCluster().getRegistry();
         // 构建 client 实例
         client = CuratorFrameworkFactory
                 .builder()

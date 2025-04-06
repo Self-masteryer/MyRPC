@@ -1,7 +1,7 @@
 package com.lcx.rpc.protocol;
 
 import com.lcx.rpc.common.constant.ProtocolConstant;
-import com.lcx.rpc.bootstrap.config.RpcApplication;
+import com.lcx.rpc.bootstrap.config.MyRpcApplication;
 import com.lcx.rpc.protocol.enums.ProtocolMessageSerializerEnum;
 import com.lcx.rpc.protocol.enums.ProtocolMessageTypeEnum;
 import lombok.AllArgsConstructor;
@@ -67,15 +67,15 @@ public class ProtocolMessage<T> {
         this.header = header;
     }
 
-    public static Header.HeaderBuilder getBasedHeader(){
+    public static Header.HeaderBuilder getBasedHeader() {
         return Header.builder()
                 .magicNum(ProtocolConstant.PROTOCOL_MAGIC)
                 .version(ProtocolConstant.PROTOCOL_VERSION);
     }
 
-    public static Header.HeaderBuilder getDefReqHeader(){
+    public static Header.HeaderBuilder getDefReqHeader() {
         ProtocolMessageSerializerEnum serializerEnum = ProtocolMessageSerializerEnum.getByValue(
-                        RpcApplication.getRpcConfig().getSerializer());
+                MyRpcApplication.getRpcConfig().getProtocol().getSerializer());
         return getBasedHeader()
                 .serializerId((byte) serializerEnum.getKey())
                 .messageType((byte) ProtocolMessageTypeEnum.REQUEST.getValue());

@@ -1,7 +1,7 @@
 package com.lcx.rpc.cluster.register.cache;
 
 import cn.hutool.json.JSONUtil;
-import com.lcx.rpc.bootstrap.config.RpcApplication;
+import com.lcx.rpc.bootstrap.config.MyRpcApplication;
 import com.lcx.rpc.cluster.register.impl.EtcdRegistry;
 import com.lcx.rpc.common.model.ServiceMetaInfo;
 import io.etcd.jetcd.ByteSequence;
@@ -32,7 +32,7 @@ public class EtcdCacheManager extends RegistryCacheManager {
     public EtcdCacheManager(KV kvClient, Watch watchClient) {
         this.kvClient = kvClient;
         this.watchClient = watchClient;
-        init(RpcApplication.getRpcConfig().getRegistry().getCompensationInterval());
+        init(MyRpcApplication.getRpcConfig().getCluster().getRegistry().getCompensationInterval());
     }
 
     @Override

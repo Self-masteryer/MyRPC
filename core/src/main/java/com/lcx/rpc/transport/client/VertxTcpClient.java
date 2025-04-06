@@ -2,7 +2,7 @@ package com.lcx.rpc.transport.client;
 
 import cn.hutool.core.util.IdUtil;
 import com.esotericsoftware.minlog.Log;
-import com.lcx.rpc.bootstrap.config.RpcApplication;
+import com.lcx.rpc.bootstrap.config.MyRpcApplication;
 import com.lcx.rpc.common.model.RpcRequest;
 import com.lcx.rpc.common.model.RpcResponse;
 import com.lcx.rpc.common.model.ServiceMetaInfo;
@@ -51,7 +51,7 @@ public class VertxTcpClient {
                         .magicNum(ProtocolConstant.PROTOCOL_MAGIC)
                         .version(ProtocolConstant.PROTOCOL_VERSION)
                         .serializerId((byte) Objects.requireNonNull(ProtocolMessageSerializerEnum
-                                        .getByValue(RpcApplication.getRpcConfig().getSerializer()))
+                                        .getByValue(MyRpcApplication.getRpcConfig().getProtocol().getSerializer()))
                                 .getKey())
                         .messageType((byte) ProtocolMessageTypeEnum.REQUEST.getValue())
                         .requestId(IdUtil.getSnowflakeNextId())

@@ -1,6 +1,6 @@
 package com.lcx.rpc.bootstrap;
 
-import com.lcx.rpc.bootstrap.config.RpcApplication;
+import com.lcx.rpc.bootstrap.config.MyRpcApplication;
 
 /**
  * 服务消费者启动类
@@ -8,6 +8,6 @@ import com.lcx.rpc.bootstrap.config.RpcApplication;
 public class ConsumerBootStrap {
     public static void init(){
         // Rpc框架初始化
-        RpcApplication.init();
+        MyRpcApplication.init();
     }
 }

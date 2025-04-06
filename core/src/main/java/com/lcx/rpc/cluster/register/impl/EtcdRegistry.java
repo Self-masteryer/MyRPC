@@ -4,7 +4,7 @@ import cn.hutool.json.JSONUtil;
 import com.lcx.rpc.bootstrap.config.RegistryConfig;
 import com.lcx.rpc.cluster.register.Registry;
 import com.lcx.rpc.common.exception.RegistryException;
-import com.lcx.rpc.bootstrap.config.RpcApplication;
+import com.lcx.rpc.bootstrap.config.MyRpcApplication;
 import com.lcx.rpc.common.model.ServiceMetaInfo;
 import com.lcx.rpc.cluster.register.cache.EtcdCacheManager;
 import com.lcx.rpc.cluster.register.cache.RegistryCacheManager;
@@ -40,7 +40,7 @@ public class EtcdRegistry implements Registry {
     private final ScheduledExecutorService compensationScheduler = Executors.newSingleThreadScheduledExecutor();
 
     {
-        RegistryConfig registryConfig = RpcApplication.getRpcConfig().getRegistry();
+        RegistryConfig registryConfig = MyRpcApplication.getRpcConfig().getCluster().getRegistry();
         try {
             // 1. 初始化Etcd客户端
             client = Client.builder()
@@ -68,7 +68,7 @@ public class EtcdRegistry implements Registry {
         if (leaseIdMap.containsKey(etcdServiceNodeKey)) return;
         try {
             // 1. 创建租约
-            long leaseId = leaseClient.grant(RpcApplication.getRpcConfig().getRegistry().getLeaseTime()).get().getID();
+            long leaseId = leaseClient.grant(MyRpcApplication.getRpcConfig().getCluster().getRegistry().getLeaseTime()).get().getID();
 
             // 2. 注册服务节点
             ByteSequence key = ByteSequence.from(etcdServiceNodeKey, StandardCharsets.UTF_8);

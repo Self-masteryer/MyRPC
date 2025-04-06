@@ -1,7 +1,7 @@
 package com.lcx.rpc.common.model;
 
 import cn.hutool.core.util.StrUtil;
-import com.lcx.rpc.bootstrap.config.RpcApplication;
+import com.lcx.rpc.bootstrap.config.MyRpcApplication;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -52,7 +52,7 @@ public class ServiceMetaInfo {
      * 获取服务键
      */
     public String getServiceKey() {
-        return String.format("%s/%s:%s", RpcApplication.getRpcConfig().getEnv(), name, version);
+        return String.format("%s/%s:%s", MyRpcApplication.getRpcConfig().getEnv(), name, version);
     }
 
     /**

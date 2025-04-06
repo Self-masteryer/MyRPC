@@ -1,6 +1,6 @@
 package com.lcx.rpc.transport.server.http;
 
-import com.lcx.rpc.bootstrap.config.RpcApplication;
+import com.lcx.rpc.bootstrap.config.MyRpcApplication;
 import com.lcx.rpc.common.model.RpcRequest;
 import com.lcx.rpc.common.model.RpcResponse;
 import com.lcx.rpc.protocol.serializer.Serializer;
@@ -26,7 +26,7 @@ public class VertxHttpServerHandler implements Handler<HttpServerRequest> {
 
     @Override
     public void handle(HttpServerRequest request) {
-        final Serializer serializer = SerializerFactory.getSerializer(RpcApplication.getRpcConfig().getSerializer());
+        final Serializer serializer = SerializerFactory.getSerializer(MyRpcApplication.getRpcConfig().getProtocol().getSerializer());
         log.info("Receive request:{} {}", request.method(), request.uri());
         request.bodyHandler(body -> {
             byte[] bytes = body.getBytes();

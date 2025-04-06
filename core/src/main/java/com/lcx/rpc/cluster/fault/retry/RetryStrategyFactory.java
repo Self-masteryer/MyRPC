@@ -1,6 +1,6 @@
 package com.lcx.rpc.cluster.fault.retry;
 
-import com.lcx.rpc.bootstrap.config.RpcApplication;
+import com.lcx.rpc.bootstrap.config.MyRpcApplication;
 import com.lcx.rpc.common.spi.SpiLoader;
 
 /**
@@ -15,7 +15,7 @@ public class RetryStrategyFactory {
     /**
      * 配置的重试策略
      */
-    public static final RetryStrategy retryStrategy = getRetryStrategy(RpcApplication.getRpcConfig().getRetryStrategy());
+    public static final RetryStrategy retryStrategy = getRetryStrategy(MyRpcApplication.getRpcConfig().getCluster().getRetryStrategy());
 
     /**
      * 获取重试策略

@@ -1,5 +1,6 @@
 package com.lcx.rpc.bootstrap.config;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.lcx.rpc.cluster.register.Registry;
 import com.lcx.rpc.cluster.register.RegistryFactory;
 import com.lcx.rpc.common.utils.ConfigUtils;
@@ -7,35 +8,36 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Rpc配置文件
+ * MyRPC配置文件
  */
 @Data
 @Slf4j
-public class RpcApplication {
+public class MyRpcApplication {
 
-    private RpcConfig rpc;
-    private static volatile RpcApplication rpcApplication;
+    private MyRpcConfig myRPC;
+    private static volatile MyRpcApplication myRpcApplication;
 
-    public static RpcConfig getRpcConfig() {
-        if (rpcApplication == null) {
-            synchronized (RpcApplication.class) {
-                if (rpcApplication == null) {
+    // 懒汉式单例模式：双重检查锁，搭配volatile关键之保证线程安全
+    public static MyRpcConfig getRpcConfig() {
+        if (myRpcApplication == null) {
+            synchronized (MyRpcApplication.class) {
+                if (myRpcApplication == null) {
                     build();
                 }
             }
         }
-        return rpcApplication.getRpc();
+        return myRpcApplication.getMyRPC();
     }
 
     private static void build() {
         try {
             // 加载配置文件
-            rpcApplication = ConfigUtils.loadConfig(RpcApplication.class, "");
+            myRpcApplication = ConfigUtils.loadConfig(MyRpcApplication.class, "");
         } catch (Exception e) {
             // 加载失败，采用默认值
-            rpcApplication = new RpcApplication();
+            myRpcApplication = new MyRpcApplication();
         }
-        log.info("rpc config:{}", rpcApplication);
+        log.info("MyRPC config:{}", myRpcApplication);
     }
 
     /**
@@ -43,7 +45,7 @@ public class RpcApplication {
      */
     public static void init() {
         // 注册中心配置
-        RegistryConfig registryConfig = getRpcConfig().getRegistry();
+        RegistryConfig registryConfig = getRpcConfig().getCluster().getRegistry();
         // 注册中心
         Registry registry = RegistryFactory.registry;
         log.info("registry init success, config = {}", registryConfig);

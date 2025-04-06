@@ -1,5 +1,7 @@
 package com.lcx.rpc.transport.server.tcp.netty;
 
+import com.lcx.rpc.bootstrap.config.MyRpcApplication;
+import com.lcx.rpc.bootstrap.config.ServerConfig;
 import com.lcx.rpc.transport.server.RpcServer;
 import com.lcx.rpc.transport.server.handler.RpcReqHandler;
 import com.lcx.rpc.transport.server.tcp.netty.codec.ProtocolFrameDecoder;
@@ -9,7 +11,6 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.TimeUnit;
@@ -21,70 +22,69 @@ import java.util.concurrent.TimeUnit;
 public class NettyServer implements RpcServer {
 
     private final ServerConfig config;
+    private final RpcReqHandler rpcReqHandler;
     private NioEventLoopGroup bossGroup;
     private NioEventLoopGroup workerGroup;
     private DefaultEventLoopGroup businessGroup;
     private Channel serverChannel;
-    private final RpcReqHandler rpcReqHandler;
 
-    // 默认配置构造函数
     public NettyServer(RpcReqHandler rpcReqHandler) {
-        this(new ServerConfig(),rpcReqHandler);
-    }
-
-    // 自定义配置构造函数
-    public NettyServer(ServerConfig config, RpcReqHandler rpcReqHandler) {
-        this.config = config;
         this.rpcReqHandler = rpcReqHandler;
-        validateConfig();
-    }
-
-    // 配置校验
-    private void validateConfig() {
-        if (config.port < 1 || config.port > 65535) {
-            throw new IllegalArgumentException("Invalid port number");
-        }
+        this.config = MyRpcApplication.getRpcConfig().getServer();
     }
 
     @Override
     public void start(int port) {
-        config.setPort(port);
         initEventLoopGroups();
 
         ServerBootstrap bootstrap = createServerBootstrap(rpcReqHandler);
         try {
-            serverChannel = bootstrap.bind(config.port).sync().channel();
+            serverChannel = bootstrap.bind(config.getPort()).sync().channel();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
 
-        log.info("Server started on port {}", config.port);
+        log.info("Server started on port {}", port);
         addShutdownHook();
 
         serverChannel.closeFuture().addListener(promise -> shutdownGracefully());
     }
 
     private void initEventLoopGroups() {
-        bossGroup = new NioEventLoopGroup(config.bossThreads);
-        workerGroup = new NioEventLoopGroup(config.workerThreads);
-        businessGroup = new DefaultEventLoopGroup(config.businessThreads);
+        ServerConfig.Group group = config.getGroup();
+        if (group.getBossThreads() != 0) {
+            bossGroup = new NioEventLoopGroup(group.getBossThreads());
+        }
+        if (group.getWorkerThreads() > 0) {
+            workerGroup = new NioEventLoopGroup(group.getWorkerThreads());
+        } else {
+            workerGroup = new NioEventLoopGroup(1);
+        }
+        if (group.getBusinessThreads() != 0) {
+            businessGroup = new DefaultEventLoopGroup(group.getBusinessThreads());
+        }
     }
 
     private ServerBootstrap createServerBootstrap(RpcReqHandler rpcReqHandler) {
-        return new ServerBootstrap()
-                .group(bossGroup, workerGroup)
+        ServerBootstrap serverBootstrap = new ServerBootstrap()
                 .channel(NioServerSocketChannel.class)
-                .option(ChannelOption.SO_BACKLOG, config.soBacklog)
+                .option(ChannelOption.SO_BACKLOG, config.getOption().getSoBacklog())
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) {
-                        ch.pipeline()
+                        ChannelPipeline pipeline = ch.pipeline()
                                 .addLast(new ProtocolFrameDecoder())
-                                .addLast(new ProtocolMessageCodec())
-                                .addLast(businessGroup, new RpcServerHandler(rpcReqHandler));
+                                .addLast(new ProtocolMessageCodec());
+                        if (businessGroup == null) pipeline.addLast(new RpcServerHandler(rpcReqHandler));
+                        else pipeline.addLast(businessGroup, new RpcServerHandler(rpcReqHandler));
                     }
                 });
+
+        if (bossGroup == null) serverBootstrap.group(workerGroup);
+        else serverBootstrap.group(bossGroup, workerGroup);
+
+        return serverBootstrap;
     }
 
     public void shutdown() {
@@ -116,38 +116,8 @@ public class NettyServer implements RpcServer {
 
     private void addShutdownHook() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            log.warn("Received shutdown signal for port {}", config.port);
+            log.warn("Received shutdown signal for port {}", config.getPort());
             shutdown();
         }));
-    }
-
-    // 配置类
-    public static class ServerConfig {
-        private int bossThreads = 1;
-        private int workerThreads = Runtime.getRuntime().availableProcessors() * 2;
-        private int businessThreads = 32;
-        @Setter
-        private int port = 8080;
-        private int soBacklog = 1024;
-
-        public ServerConfig bossThreads(int threads) {
-            this.bossThreads = threads;
-            return this;
-        }
-
-        public ServerConfig workerThreads(int threads) {
-            this.workerThreads = threads;
-            return this;
-        }
-
-        public ServerConfig businessThreads(int threads) {
-            this.businessThreads = threads;
-            return this;
-        }
-
-        public ServerConfig soBacklog(int backlog) {
-            this.soBacklog = backlog;
-            return this;
-        }
     }
 }

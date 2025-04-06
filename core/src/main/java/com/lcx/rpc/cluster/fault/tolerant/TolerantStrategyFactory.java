@@ -1,6 +1,6 @@
 package com.lcx.rpc.cluster.fault.tolerant;
 
-import com.lcx.rpc.bootstrap.config.RpcApplication;
+import com.lcx.rpc.bootstrap.config.MyRpcApplication;
 import com.lcx.rpc.common.spi.SpiLoader;
 
 /**
@@ -15,7 +15,7 @@ public class TolerantStrategyFactory {
     /**
      * 配置的容错策略
      */
-    public static final TolerantStrategy tolerantStrategy = getTolerantStrategy(RpcApplication.getRpcConfig().getTolerantStrategy());
+    public static final TolerantStrategy tolerantStrategy = getTolerantStrategy(MyRpcApplication.getRpcConfig().getCluster().getTolerantStrategy());
 
     /**
      * 获取容错策略实例

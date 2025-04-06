@@ -1,7 +1,7 @@
 package com.lcx.rpc.bootstrap;
 
-import com.lcx.rpc.bootstrap.config.RpcApplication;
-import com.lcx.rpc.bootstrap.config.RpcConfig;
+import com.lcx.rpc.bootstrap.config.MyRpcApplication;
+import com.lcx.rpc.bootstrap.config.MyRpcConfig;
 import com.lcx.rpc.common.model.ServiceMetaInfo;
 import com.lcx.rpc.common.model.ServiceRegisterInfo;
 import com.lcx.rpc.cluster.register.LocalRegister;
@@ -18,9 +18,9 @@ import java.util.List;
 public class ProviderBootStrap {
     public static void init(List<ServiceRegisterInfo> serviceRegisterInfoList) {
         // Rpc框架初始化
-        RpcApplication.init();
+        MyRpcApplication.init();
         // 全局配置
-        final RpcConfig rpcConfig = RpcApplication.getRpcConfig();
+        final MyRpcConfig myRpcConfig = MyRpcApplication.getRpcConfig();
         Registry registry = RegistryFactory.registry;
         // 注册服务
         for (ServiceRegisterInfo serviceRegisterInfo : serviceRegisterInfoList) {
@@ -29,10 +29,10 @@ public class ProviderBootStrap {
             // 注册服务到注册中心
             ServiceMetaInfo serviceMetaInfo = ServiceMetaInfo.builder()
                     .name(serviceName)
-                    .version(rpcConfig.getVersion())
-                    .host(rpcConfig.getHost())
-                    .port(rpcConfig.getPort())
-                    .weight(rpcConfig.getWeight())
+                    .version(myRpcConfig.getVersion())
+                    .host(myRpcConfig.getServer().getHost())
+                    .port(myRpcConfig.getServer().getPort())
+                    .weight(myRpcConfig.getWeight())
                     .canRetry(serviceRegisterInfo.getCanRetry())
                     .build();
             try {

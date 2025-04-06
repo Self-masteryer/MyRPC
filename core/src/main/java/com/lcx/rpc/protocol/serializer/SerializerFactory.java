@@ -1,6 +1,6 @@
 package com.lcx.rpc.protocol.serializer;
 
-import com.lcx.rpc.bootstrap.config.RpcApplication;
+import com.lcx.rpc.bootstrap.config.MyRpcApplication;
 import com.lcx.rpc.common.spi.SpiLoader;
 
 /**
@@ -15,7 +15,7 @@ public class SerializerFactory {
     /**
      * 配置的序列化器
      */
-    public static final Serializer serializer = getSerializer(RpcApplication.getRpcConfig().getSerializer());
+    public static final Serializer serializer = getSerializer(MyRpcApplication.getRpcConfig().getProtocol().getSerializer());
 
     /**
      * 获取实例
