@@ -5,8 +5,8 @@
     <groupId>com.lcx</groupId>
     <artifactId>springboot-provider</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>example-springboot-provider</name>
-    <description>example-springboot-provider</description>
+    <name>springboot-provider</name>
+    <description>springboot-provider</description>
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -1,7 +1,7 @@
 package com.lcx.rpc.springboot.starter.bootstrap;
 
-import com.lcx.rpc.cluster.config.RpcApplication;
-import com.lcx.rpc.cluster.config.RpcConfig;
+import com.lcx.rpc.bootstrap.config.MyRpcApplication;
+import com.lcx.rpc.bootstrap.config.MyRpcConfig;
 import com.lcx.rpc.common.model.ServiceMetaInfo;
 import com.lcx.rpc.cluster.register.LocalRegister;
 import com.lcx.rpc.cluster.register.Registry;
@@ -29,13 +29,13 @@ public class RpcProviderBootStrap implements BeanPostProcessor {
             // 本地服务注册: 接口名称,实现类
             LocalRegister.register(serviceName, beanClass);
             // 服务注册
-            RpcConfig rpcConfig = RpcApplication.getRpcConfig();
+            MyRpcConfig rpcConfig = MyRpcApplication.getRpcConfig();
             Registry registry = RegistryFactory.registry;
             ServiceMetaInfo serviceMetaInfo = ServiceMetaInfo.builder()
                     .name(serviceName)
                     .version(serviceVersion)
-                    .host(rpcConfig.getHost())
-                    .port(rpcConfig.getPort())
+                    .host(rpcConfig.getServer().getHost())
+                    .port(rpcConfig.getServer().getPort())
                     .weight(rpcConfig.getWeight())
                     .build();
             try {

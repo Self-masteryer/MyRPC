@@ -5,8 +5,8 @@
     <groupId>com.lcx</groupId>
     <artifactId>springboot-consumer</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>example-springboot-consumer</name>
-    <description>example-springboot-consumer</description>
+    <name>springboot-consumer</name>
+    <description>springboot-consumer</description>
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
