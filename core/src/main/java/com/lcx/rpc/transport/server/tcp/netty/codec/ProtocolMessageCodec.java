@@ -1,5 +1,7 @@
 package com.lcx.rpc.transport.server.tcp.netty.codec;
 
+import com.lcx.rpc.common.model.RpcPing;
+import com.lcx.rpc.common.model.RpcPong;
 import com.lcx.rpc.common.model.RpcRequest;
 import com.lcx.rpc.common.model.RpcResponse;
 import com.lcx.rpc.common.constant.ProtocolConstant;
@@ -64,7 +66,7 @@ public class ProtocolMessageCodec extends MessageToMessageCodec<ByteBuf, Protoco
         byte[] body = new byte[header.getBodyLength()];
         byteBuf.readBytes(body);
 
-        // 序列化器
+        // 反序列化器
         ProtocolMessageSerializerEnum serializerEnum = ProtocolMessageSerializerEnum.getByKey(header.getSerializerId());
         assert serializerEnum != null : "序列化消息的协议不存在";
         Serializer serializer = SerializerFactory.getSerializer(serializerEnum.getValue());
@@ -82,9 +84,15 @@ public class ProtocolMessageCodec extends MessageToMessageCodec<ByteBuf, Protoco
                 RpcResponse response = serializer.deserialize(body, RpcResponse.class);
                 list.add(new ProtocolMessage<>(header, response));
             }
+            case PING -> {
+                RpcPing rpcPing = serializer.deserialize(body, RpcPing.class);
+                list.add(new ProtocolMessage<>(header, rpcPing));
+            }
+            case PONG -> {
+                RpcPong rpcPong = serializer.deserialize(body, RpcPong.class);
+                list.add(new ProtocolMessage<>(header, rpcPong));
+            }
             default -> throw new RuntimeException("暂不支持该消息类型");
         }
-        ;
-
     }
 }

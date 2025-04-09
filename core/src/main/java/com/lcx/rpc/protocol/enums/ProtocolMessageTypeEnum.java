@@ -10,8 +10,9 @@ public enum ProtocolMessageTypeEnum {
 
     REQUEST(0),    // 请求
     RESPONSE(1),   // 响应
-    HEART_BEAT(2), // 心跳
-    OTHERS(3);     // 其他
+    PING(2),       // ping
+    PONG(3),       // pong
+    OTHERS(4);     // 其他
 
     private final int value;
 

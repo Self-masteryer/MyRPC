@@ -39,5 +39,5 @@ public class RpcRequest implements Serializable {
     /**
      * 服务版本
      */
-    private String serviceVersion= RpcConstant.DEFAULT_SERVICE_VERSION;
+    private String serviceVersion = RpcConstant.DEFAULT_SERVICE_VERSION;
 }

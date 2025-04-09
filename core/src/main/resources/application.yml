@@ -15,6 +15,9 @@ myRPC:
     tolerantStrategy: failFast
   protocol:
     serializer: kryo
+  client:
+    ioThreads: 16
+    connectTimeout: 3000
   server:
     host: 127.0.0.1
     port: 8081

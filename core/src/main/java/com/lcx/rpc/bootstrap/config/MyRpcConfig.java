@@ -40,5 +40,9 @@ public class MyRpcConfig {
      * 服务器
      */
     private ServerConfig server = new ServerConfig();
+    /**
+     * 客户端
+     */
+    private ClientConfig client = new ClientConfig();
 
 }

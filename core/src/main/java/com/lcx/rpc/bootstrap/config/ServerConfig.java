@@ -35,7 +35,7 @@ public class ServerConfig {
         /**
          * 从Reactor数量：处理读写事件
          */
-        private int workerThreads = Runtime.getRuntime().availableProcessors() * 2;
+        private int workerThreads = Runtime.getRuntime().availableProcessors();
 
         /**
          * 业务线程数量：执行业务
@@ -46,10 +46,9 @@ public class ServerConfig {
     @Data
     public static class Option {
         /**
-         * 半连接队列大小
+         * 连接队列大小
          */
         private int soBacklog = 1024;
     }
-
 
 }

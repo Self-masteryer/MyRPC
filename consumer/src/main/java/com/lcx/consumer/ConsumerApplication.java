@@ -12,11 +12,15 @@ import java.util.concurrent.TimeUnit;
 public class ConsumerApplication {
 
     public static void main(String[] args) {
+        test();
+    }
+
+    public static void test() {
         ConsumerBootStrap.init();
         int success = 0, failure = 0;
         // 动态代理
         IUserService userService = ServiceProxyFactory.getProxy(IUserService.class);
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 1; i++) {
             // 调用服务
             try {
                 User user = userService.getUserById(1);
