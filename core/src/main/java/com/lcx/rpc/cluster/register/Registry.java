@@ -38,4 +38,5 @@ public interface Registry {
      * 服务销毁，关闭资源
      */
     void destroy();
+
 }

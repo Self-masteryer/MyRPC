@@ -7,7 +7,7 @@ import com.lcx.rpc.common.exception.RegistryException;
 import com.lcx.rpc.bootstrap.config.MyRpcApplication;
 import com.lcx.rpc.common.model.ServiceMetaInfo;
 import com.lcx.rpc.cluster.register.cache.EtcdCacheManager;
-import com.lcx.rpc.cluster.register.cache.RegistryCacheManager;
+import com.lcx.rpc.cluster.register.cache.ServiceCacheManager;
 import io.etcd.jetcd.*;
 import io.etcd.jetcd.lease.LeaseKeepAliveResponse;
 import io.etcd.jetcd.options.PutOption;
@@ -35,7 +35,7 @@ public class EtcdRegistry implements Registry {
     private final Map<String, Long> leaseIdMap = new ConcurrentHashMap<>();
     private final Set<ServiceMetaInfo> localServiceRegisterSet = new CopyOnWriteArraySet<>();
     // 缓存管理
-    private final RegistryCacheManager cacheManager;
+    private final ServiceCacheManager cacheManager;
     // 定时全量补偿线程池
     private final ScheduledExecutorService compensationScheduler = Executors.newSingleThreadScheduledExecutor();
 
@@ -113,7 +113,7 @@ public class EtcdRegistry implements Registry {
 
     @Override
     public List<ServiceMetaInfo> serviceDiscovery(String serviceKey) {
-        return cacheManager.getServices(serviceKey);
+        return cacheManager.getServiceList(serviceKey);
     }
 
     @Override

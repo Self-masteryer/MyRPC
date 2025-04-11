@@ -32,8 +32,8 @@ public class ZooKeeperRegistry implements Registry {
 
     public static final String ROOT_PATH = "/MyRPC";
 
-    private CuratorFramework client;
-    private ServiceDiscovery<ServiceMetaInfo> serviceDiscovery;
+    private final CuratorFramework client;
+    private final ServiceDiscovery<ServiceMetaInfo> serviceDiscovery;
     // 本机注册的节点 key 集合（用于维护续期）
     private final Set<String> localRegisterNodeKeySet = new HashSet<>();
     // 注册中心服务缓存
