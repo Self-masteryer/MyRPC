@@ -13,13 +13,10 @@ import java.util.concurrent.ThreadLocalRandom;
 public class RandomLoadBalancer implements LoadBalancer {
 
     @Override
-    public ServiceMetaInfo select(Map<String, Object> params, List<ServiceMetaInfo> serviceMetaInfos) {
-        if (serviceMetaInfos == null || serviceMetaInfos.isEmpty()) return null;
-        return serviceMetaInfos.get(ThreadLocalRandom.current().nextInt(serviceMetaInfos.size()));
+    public ServiceMetaInfo select(Map<String, Object> params, List<ServiceMetaInfo> serviceList) {
+        if (serviceList == null || serviceList.isEmpty()) return null;
+        ThreadLocalRandom threadLocalRandom = ThreadLocalRandom.current();
+        return serviceList.get(threadLocalRandom.nextInt(serviceList.size()));
     }
 
-    @Override
-    public void refresh(String serviceKey, List<ServiceMetaInfo> serviceMetaInfos) {
-
-    }
 }

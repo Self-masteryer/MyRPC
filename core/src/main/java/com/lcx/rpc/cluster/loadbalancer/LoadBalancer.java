@@ -13,17 +13,59 @@ public interface LoadBalancer {
     /**
      * 选择服务调用
      * @param params 参数
-     * @param serviceMetaInfos 服务元数据
+     * @param serviceList 服务列表
      * @return 服务
      */
-    ServiceMetaInfo select(Map<String, Object> params, List<ServiceMetaInfo> serviceMetaInfos);
+    ServiceMetaInfo select(Map<String, Object> params, List<ServiceMetaInfo> serviceList);
 
     /**
-     * 更新状态
-     * @param serviceKey 服务键
-     * @param serviceMetaInfos 服务元数据
+     * 获取服务键
+     * @param params 参数
+     * @param serviceList 服务列表
+     * @return 服务键
      */
-    void refresh(String serviceKey, List<ServiceMetaInfo> serviceMetaInfos);
+    default String getServiceKey(Map<String, Object> params, List<ServiceMetaInfo> serviceList) {
+        String serviceKey = (String) params.get("serviceKey");
+        if (serviceKey == null) {
+            serviceKey = serviceList.get(0).getName();
+        }
+        return serviceKey;
+    }
 
+    /**
+     * 刷新状态
+     * @param serviceKey 服务键
+     * @param serviceList 服务列表
+     */
+    default void refresh(String serviceKey, List<ServiceMetaInfo> serviceList) {
 
+    }
+
+    /**
+     * 添加服务
+     * @param serviceKey 服务键
+     * @param serviceMetaInfo 服务元数据
+     */
+    default void add(String serviceKey, ServiceMetaInfo serviceMetaInfo) {
+
+    }
+
+    /**
+     * 删除服务
+     * @param serviceKey 服务键
+     * @param serviceMetaInfo 服务元数据
+     */
+    default void remove(String serviceKey, ServiceMetaInfo serviceMetaInfo) {
+
+    }
+
+    /**
+     * 更新服务
+     * @param serviceKey 服务键
+     * @param oldServiceMetaInfo 旧服务元数据
+     * @param newServiceMetaInfo 新服务元数据
+     */
+    default void update(String serviceKey, ServiceMetaInfo oldServiceMetaInfo, ServiceMetaInfo newServiceMetaInfo) {
+
+    }
 }

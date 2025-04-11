@@ -7,7 +7,13 @@ import java.util.List;
 /**
  * 缓存更新监听器
  */
-@FunctionalInterface
 public interface CacheUpdateListener {
-    void onUpdate(String serviceKey, List<ServiceMetaInfo> serviceMetaInfos);
+
+    void refresh(String serviceKey, List<ServiceMetaInfo> serviceMetaInfos);
+
+    void add(String serviceKey, ServiceMetaInfo serviceMetaInfo);
+
+    void remove(String serviceKey, ServiceMetaInfo serviceMetaInfo);
+
+    void update(String serviceKey, ServiceMetaInfo oldServiceMetaInfo, ServiceMetaInfo newServiceMetaInfo);
 }

@@ -25,11 +25,11 @@ public class ConsistentHashLoadBalancer implements LoadBalancer {
     }
 
     @Override
-    public ServiceMetaInfo select(Map<String, Object> params, List<ServiceMetaInfo> serviceMetaInfos) {
-        if (serviceMetaInfos == null || serviceMetaInfos.isEmpty()) return null;
+    public ServiceMetaInfo select(Map<String, Object> params, List<ServiceMetaInfo> serviceList) {
+        if (serviceList == null || serviceList.isEmpty()) return null;
 
         // 添加虚拟节点，构造一致性hash环
-        for (ServiceMetaInfo serviceMetaInfo : serviceMetaInfos) {
+        for (ServiceMetaInfo serviceMetaInfo : serviceList) {
             for (int i = 0; i < VIRTUAL_NODE_SIZE; i++) {
                 String key = serviceMetaInfo.getServiceNodeKey() + "#VN" + i;
                 virtualNodes.put(getHash(key), serviceMetaInfo);
@@ -43,7 +43,22 @@ public class ConsistentHashLoadBalancer implements LoadBalancer {
     }
 
     @Override
-    public void refresh(String serviceKey, List<ServiceMetaInfo> serviceMetaInfos) {
+    public void refresh(String serviceKey, List<ServiceMetaInfo> serviceList) {
+
+    }
+
+    @Override
+    public void add(String serviceKey, ServiceMetaInfo serviceMetaInfo) {
+
+    }
+
+    @Override
+    public void remove(String serviceKey, ServiceMetaInfo serviceMetaInfo) {
+
+    }
+
+    @Override
+    public void update(String serviceKey, ServiceMetaInfo oldServiceMetaInfo, ServiceMetaInfo newServiceMetaInfo) {
 
     }
 
