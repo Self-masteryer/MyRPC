@@ -33,7 +33,13 @@ public interface LoadBalancer {
     }
 
     /**
-     * 刷新状态
+     * 是否同步负载均衡算法状态
+     * @return yes or no
+     */
+    boolean syncState();
+
+    /**
+     * 刷新状态：全量补偿时调用
      * @param serviceKey 服务键
      * @param serviceList 服务列表
      */

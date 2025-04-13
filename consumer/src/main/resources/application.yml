@@ -10,7 +10,7 @@ myRPC:
       address: "http://localhost:2379" # localhost:2181
       timeout: 5000
       leaseTime: 30
-    loadBalancer: weightedRoundRobin
+    loadBalancer: consistentHash
     retryStrategy: fixedInterval
     tolerantStrategy: failFast
   protocol:

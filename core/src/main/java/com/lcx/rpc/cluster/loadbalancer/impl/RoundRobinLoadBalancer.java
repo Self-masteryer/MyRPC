@@ -25,4 +25,9 @@ public class RoundRobinLoadBalancer implements LoadBalancer {
                 .updateAndGet(i -> (i + 1) % serviceList.size());
         return serviceList.get(index);
     }
+
+    @Override
+    public boolean syncState() {
+        return false;
+    }
 }

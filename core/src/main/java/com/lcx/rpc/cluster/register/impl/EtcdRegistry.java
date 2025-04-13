@@ -33,10 +33,11 @@ public class EtcdRegistry implements Registry {
     private final Lease leaseClient;
     // 服务注册管理：节点键 -> 租约Id
     private final Map<String, Long> leaseIdMap = new ConcurrentHashMap<>();
+    // 本地服务注册集合，防止重复注册
     private final Set<ServiceMetaInfo> localServiceRegisterSet = new CopyOnWriteArraySet<>();
     // 缓存管理
     private final ServiceCacheManager cacheManager;
-    // 定时全量补偿线程池
+    // 定期补偿注册节点线程池
     private final ScheduledExecutorService compensationScheduler = Executors.newSingleThreadScheduledExecutor();
 
     {
@@ -119,18 +120,17 @@ public class EtcdRegistry implements Registry {
     @Override
     public void destroy() {
         log.info("Etcd注册中心关闭中...");
-        // 立刻终止定期全量补偿任务
+        // 1.立刻终止定期全量补偿任务
         compensationScheduler.shutdownNow();
-        // 清理本地注册节点,并取消续约
+        // 2.清理本地注册节点,并取消续约
         leaseIdMap.forEach((k, v) -> {
             ByteSequence keyByteSequence = ByteSequence.from(k, StandardCharsets.UTF_8);
-            kvClient.delete(keyByteSequence);
-            leaseClient.revoke(v);
+            kvClient.delete(keyByteSequence); // 删除
+            leaseClient.revoke(v); // 撤销
         });
-
-        // 关闭缓存管理器
+        // 3.关闭缓存管理器
         cacheManager.destroy();
-        // 关闭Etcd客户端
+        // 4.关闭Etcd客户端
         client.close();
         log.info("Etcd注册中心已关闭");
     }

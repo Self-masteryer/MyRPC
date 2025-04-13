@@ -19,4 +19,9 @@ public class RandomLoadBalancer implements LoadBalancer {
         return serviceList.get(threadLocalRandom.nextInt(serviceList.size()));
     }
 
+    @Override
+    public boolean syncState() {
+        return false;
+    }
+
 }

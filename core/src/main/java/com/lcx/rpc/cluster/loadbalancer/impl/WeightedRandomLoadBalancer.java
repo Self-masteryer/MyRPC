@@ -25,6 +25,11 @@ public class WeightedRandomLoadBalancer implements LoadBalancer {
         return serviceList.get(0);
     }
 
+    @Override
+    public boolean syncState() {
+        return false;
+    }
+
     private int getTotalWeight(List<ServiceMetaInfo> serviceMetaInfos) {
         int sum = 0;
         for (ServiceMetaInfo serviceMetaInfo : serviceMetaInfos) {

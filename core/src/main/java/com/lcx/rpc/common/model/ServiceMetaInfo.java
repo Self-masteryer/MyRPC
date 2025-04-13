@@ -63,12 +63,9 @@ public class ServiceMetaInfo {
     }
 
     /**
-     * 获取完整服务地址
+     * 获取服务地址
      */
     public String getServiceAddress() {
-        if (!StrUtil.contains(host, "http")) {
-            return String.format("http://%s:%s", host, port);
-        }
         return String.format("%s:%s", host, port);
     }
 

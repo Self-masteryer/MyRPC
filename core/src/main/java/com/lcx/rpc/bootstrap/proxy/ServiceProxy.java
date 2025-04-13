@@ -23,6 +23,7 @@ import com.lcx.rpc.transport.client.netty.NettyClient;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 
@@ -59,7 +60,7 @@ public class ServiceProxy implements InvocationHandler {
 
         // 负载均衡
         LoadBalancer loadBalancer = LoadBalancerFactory.loadBalancer;
-        Map<String, Object> params = Map.of("serviceKey", serviceMetaInfo.getServiceKey(), "host", myRpcConfig.getServer().getHost());
+        Map<String, Object> params = Map.of("serviceKey", serviceMetaInfo.getServiceKey(), "routingKey", Arrays.toString(args));
         final ServiceMetaInfo finalServiceMetaInfo = loadBalancer.select(params, new ArrayList<>(serviceMetaInfoList));
 
         RpcResponse response;

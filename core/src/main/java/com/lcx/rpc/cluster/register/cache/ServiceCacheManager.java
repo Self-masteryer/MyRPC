@@ -38,30 +38,32 @@ public abstract class ServiceCacheManager {
                 TimeUnit.MINUTES
         );
         // 添加负载均衡监听器：更新状态
-        addListener(new CacheUpdateListener() {
+        if (LoadBalancerFactory.loadBalancer.syncState()) {
+            addListener(new CacheUpdateListener() {
 
-            final LoadBalancer loadBalancer = LoadBalancerFactory.loadBalancer;
+                final LoadBalancer loadBalancer = LoadBalancerFactory.loadBalancer;
 
-            @Override
-            public void refresh(String serviceKey, List<ServiceMetaInfo> serviceMetaInfos) {
-                loadBalancer.refresh(serviceKey, serviceMetaInfos);
-            }
+                @Override
+                public void refresh(String serviceKey, List<ServiceMetaInfo> serviceMetaInfos) {
+                    loadBalancer.refresh(serviceKey, serviceMetaInfos);
+                }
 
-            @Override
-            public void add(String serviceKey, ServiceMetaInfo serviceMetaInfo) {
-                loadBalancer.add(serviceKey, serviceMetaInfo);
-            }
+                @Override
+                public void add(String serviceKey, ServiceMetaInfo serviceMetaInfo) {
+                    loadBalancer.add(serviceKey, serviceMetaInfo);
+                }
 
-            @Override
-            public void remove(String serviceKey, ServiceMetaInfo serviceMetaInfo) {
-                loadBalancer.remove(serviceKey, serviceMetaInfo);
-            }
+                @Override
+                public void remove(String serviceKey, ServiceMetaInfo serviceMetaInfo) {
+                    loadBalancer.remove(serviceKey, serviceMetaInfo);
+                }
 
-            @Override
-            public void update(String serviceKey, ServiceMetaInfo oldServiceMetaInfo, ServiceMetaInfo newServiceMetaInfo) {
-                loadBalancer.update(serviceKey, oldServiceMetaInfo, newServiceMetaInfo);
-            }
-        });
+                @Override
+                public void update(String serviceKey, ServiceMetaInfo oldServiceMetaInfo, ServiceMetaInfo newServiceMetaInfo) {
+                    loadBalancer.update(serviceKey, oldServiceMetaInfo, newServiceMetaInfo);
+                }
+            });
+        }
     }
 
     /**
@@ -73,9 +75,12 @@ public abstract class ServiceCacheManager {
             synchronized (serviceKey.intern()) {
                 if (!cache.containsKey(serviceKey)) {
                     try {
+                        // 首次从注册中心获取服务列表并缓存
                         List<ServiceMetaInfo> serviceList = loadServices(serviceKey);
-                        registerWatcher(serviceKey);
+                        // 初始化负载均衡算法状态
                         refreshNotify(serviceKey, serviceList);
+                        // 注册监听器，追踪后续事件，维护缓存和算法状态
+                        registerWatcher(serviceKey);
                     } catch (Exception e) {
                         throw new RegistryException("服务加载失败: " + serviceKey, e);
                     }
@@ -93,10 +98,14 @@ public abstract class ServiceCacheManager {
         cache.keySet().forEach(serviceKey -> {
             try {
                 synchronized (serviceKey.intern()) {
+                    // 注销监听器，防止事件处理与全量补偿双写并发异常
                     unRegisterWatcher(serviceKey);
+                    // 重新获取服务列表
                     List<ServiceMetaInfo> serviceList = loadServices(serviceKey);
-                    registerWatcher(serviceKey);
+                    // 刷新算法状态
                     refreshNotify(serviceKey, serviceList);
+                    // 注册监听器，追踪后续事件，维护缓存和算法状态
+                    registerWatcher(serviceKey);
                     log.info("缓存补偿完成: {} nodes={}", serviceKey, serviceList.size());
                 }
             } catch (Exception e) {
