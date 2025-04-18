@@ -35,9 +35,14 @@ public class RpcRequest implements Serializable {
      * 方法参数
      */
     private Object[] args;
+    /**
+     * 终止时间：单位毫秒
+     */
+    private long deadline;
 
     /**
      * 服务版本
      */
+    @Builder.Default
     private String serviceVersion = RpcConstant.DEFAULT_SERVICE_VERSION;
 }

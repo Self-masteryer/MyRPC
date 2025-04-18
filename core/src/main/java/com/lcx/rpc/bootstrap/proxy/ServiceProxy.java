@@ -10,10 +10,12 @@ import com.lcx.rpc.cluster.fault.circuitBreaker.CircuitBreaker;
 import com.lcx.rpc.cluster.fault.circuitBreaker.CircuitBreakerProvider;
 import com.lcx.rpc.cluster.fault.retry.RetryStrategy;
 import com.lcx.rpc.cluster.fault.retry.RetryStrategyFactory;
+import com.lcx.rpc.cluster.fault.retry.DeadlineThreadContext;
 import com.lcx.rpc.cluster.fault.tolerant.TolerantStrategy;
 import com.lcx.rpc.cluster.fault.tolerant.TolerantStrategyFactory;
 import com.lcx.rpc.cluster.loadbalancer.LoadBalancer;
 import com.lcx.rpc.cluster.loadbalancer.LoadBalancerFactory;
+import com.lcx.rpc.common.exception.BusinessException;
 import com.lcx.rpc.common.model.RpcRequest;
 import com.lcx.rpc.common.model.RpcResponse;
 import com.lcx.rpc.common.model.ServiceMetaInfo;
@@ -32,8 +34,24 @@ import java.util.Map;
  */
 @Slf4j
 public class ServiceProxy implements InvocationHandler {
+
+    /**
+     * 全局超时时间：单位毫秒
+     */
+    private long globalTimeout = 10000;
+
+    public ServiceProxy(long timeout) {
+        this.globalTimeout = timeout;
+    }
+
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Exception {
+        long deadline = DeadlineThreadContext.getDeadline();
+        if (deadline == 0) { // 远程方法调用入口
+            deadline = System.currentTimeMillis() + globalTimeout;
+            DeadlineThreadContext.setDeadline(deadline);
+        }
+
         MyRpcConfig myRpcConfig = MyRpcApplication.getRpcConfig();
         String serviceName = method.getDeclaringClass().getName();
 
@@ -43,6 +61,7 @@ public class ServiceProxy implements InvocationHandler {
                 .methodName(method.getName())
                 .parameterTypes(method.getParameterTypes())
                 .args(args)
+                .deadline(deadline)
                 .build();
 
         // 服务发现
@@ -61,29 +80,39 @@ public class ServiceProxy implements InvocationHandler {
         // 负载均衡
         LoadBalancer loadBalancer = LoadBalancerFactory.loadBalancer;
         Map<String, Object> params = Map.of("serviceKey", serviceMetaInfo.getServiceKey(), "routingKey", Arrays.toString(args));
-        final ServiceMetaInfo finalServiceMetaInfo = loadBalancer.select(params, new ArrayList<>(serviceMetaInfoList));
+        final ServiceMetaInfo serviceNode = loadBalancer.select(params, new ArrayList<>(serviceMetaInfoList));
 
         RpcResponse response;
-        CircuitBreaker circuitBreaker = CircuitBreakerProvider.getCircuitBreaker(finalServiceMetaInfo.getName());
+        CircuitBreaker circuitBreaker = CircuitBreakerProvider.getCircuitBreaker(serviceNode.getName());
         try {
             // 熔断判断
             if (!circuitBreaker.allowRequest()) throw new RuntimeException("熔断");
 
-            if (finalServiceMetaInfo.getCanRetry()) { // 可重试
+            // 可重试判断
+            if (serviceNode.retryable(method.getName())) { // 可重试
                 RetryStrategy retryStrategy = RetryStrategyFactory.retryStrategy;
                 response = retryStrategy.doRetry(() ->
-                        NettyClient.doRequest(rpcRequest, finalServiceMetaInfo).get()
+                        NettyClient.doRequest(rpcRequest, serviceNode).get()
                 );
             } else { // 不可重试
-                response = NettyClient.doRequest(rpcRequest, finalServiceMetaInfo).get();
+                response = NettyClient.doRequest(rpcRequest, serviceNode).get();
             }
-            if (response.getCode() == 500) throw new RuntimeException();
+
+            int codeType = response.getCode() / 100;
+            if (codeType == 4) { // 业务异常
+                throw new BusinessException(response.getMessage());
+            } else if (codeType == 5) { // 服务端异常
+                circuitBreaker.recordFailure();
+                throw new RuntimeException(response.getMessage());
+            }
+
             circuitBreaker.recordSuccess();
         } catch (Exception e) {
-            circuitBreaker.recordFailure();
             // 容错机制
             TolerantStrategy tolerantStrategy = TolerantStrategyFactory.tolerantStrategy;
             response = tolerantStrategy.doTolerant(null, e);
+        } finally {
+            DeadlineThreadContext.removeDeadline();
         }
         return response.getData();
     }
