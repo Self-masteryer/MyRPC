@@ -27,12 +27,14 @@ public class ProtocolMessageCodec extends MessageToMessageCodec<ByteBuf, Protoco
     @Override
     protected void encode(ChannelHandlerContext ctx, ProtocolMessage<?> protocolMessage, List<Object> list) throws Exception {
         ProtocolMessage.Header header = protocolMessage.getHeader();
+        byte messageType = header.getMessageType();
+        byte serializerId = header.getSerializerId();
+        byte state = (byte) (messageType << 4 | serializerId);
         ByteBuf buffer = ctx.alloc().buffer();
-        buffer.writeInt(header.getMagicNum())
-                .writeInt(header.getHeaderLength())
+        buffer.writeShort(header.getMagicNum())
                 .writeByte(header.getVersion())
-                .writeByte(header.getMessageType())
-                .writeByte(header.getSerializerId())
+                .writeShort(header.getHeaderLength())
+                .writeByte(state)
                 .writeLong(header.getRequestId());
 
         ProtocolMessageSerializerEnum serializerEnum = ProtocolMessageSerializerEnum.getByKey(header.getSerializerId());
@@ -47,24 +49,39 @@ public class ProtocolMessageCodec extends MessageToMessageCodec<ByteBuf, Protoco
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> list) throws Exception {
-        int magicNum = byteBuf.readInt();
+        short magicNum = byteBuf.readShort();
         // 校验魔数
         if (magicNum != ProtocolConstant.PROTOCOL_MAGIC) {
             throw new RuntimeException("消息 magic 非法");
         }
+        byte version = byteBuf.readByte();
+        short headerLength = byteBuf.readShort();
+        byte state = byteBuf.readByte();
+        byte messageType = (byte) (state >> 4);    // 高四位
+        byte serializerId = (byte) (state & 0x0f); // 低四位
+
         // 解析请求头
         ProtocolMessage.Header header = ProtocolMessage.Header.builder()
                 .magicNum(magicNum)
-                .headerLength(byteBuf.readInt())
-                .version(byteBuf.readByte())
-                .messageType(byteBuf.readByte())
-                .serializerId(byteBuf.readByte())
+                .version(version)
+                .headerLength(headerLength)
+                .messageType(messageType)
+                .serializerId(serializerId)
                 .requestId(byteBuf.readLong())
                 .bodyLength(byteBuf.readInt())
                 .build();
 
         byte[] body = new byte[header.getBodyLength()];
-        byteBuf.readBytes(body);
+
+        if (version == ProtocolConstant.PROTOCOL_VERSION) { // 相同版本
+
+        } else if (version < ProtocolConstant.PROTOCOL_VERSION) { // 使用对应版本的解码器解码
+
+        } else { // 忽略新字段
+
+        }
+
+        byteBuf.readBytes(body, 0, body.length);
 
         // 反序列化器
         ProtocolMessageSerializerEnum serializerEnum = ProtocolMessageSerializerEnum.getByKey(header.getSerializerId());

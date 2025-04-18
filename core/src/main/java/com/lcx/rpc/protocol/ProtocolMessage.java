@@ -38,15 +38,15 @@ public class ProtocolMessage<T> {
         /**
          * 魔数
          */
-        private int magicNum;
-        /**
-         * 消息头长度
-         */
-        private int headerLength;
+        private short magicNum;
         /**
          * 版本号
          */
         private byte version;
+        /**
+         * 头部长度
+         */
+        private short headerLength;
         /**
          * 消息类型(请求/响应/ping/pong)
          */

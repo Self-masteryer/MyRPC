@@ -27,10 +27,12 @@ public class ProtocolMessageEncoder {
         // 依次向缓冲区写入字节
         Buffer buffer = Buffer.buffer();
         ProtocolMessage.Header header = msg.getHeader();
-        buffer.appendInt(header.getMagicNum());
+        buffer.appendShort(header.getMagicNum());
         buffer.appendByte(header.getVersion());
-        buffer.appendByte(header.getSerializerId());
-        buffer.appendByte(header.getMessageType());
+        byte messageType = header.getMessageType();
+        byte serializerId = header.getSerializerId();
+        byte state = (byte) (messageType << 4 | serializerId);
+        buffer.appendByte(state);
         buffer.appendLong(header.getRequestId());
         // 获得序列化器
         ProtocolMessageSerializerEnum serializerEnum = ProtocolMessageSerializerEnum.getByKey(header.getSerializerId());

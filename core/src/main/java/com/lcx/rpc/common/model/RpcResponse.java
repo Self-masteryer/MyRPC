@@ -39,19 +39,28 @@ public class RpcResponse implements Serializable {
     /**
      * 异常信息
      */
-    private Exception exception;
-
-    /**
-     * 构造成功信息
-     */
+    //private Exception exception;
     public static RpcResponse success(Object data) {
         return RpcResponse.builder().code(200).data(data).dataType(data.getClass()).build();
     }
 
-    /**
-     * 构造失败信息
-     */
-    public static RpcResponse fail() {
-        return RpcResponse.builder().code(500).message("服务器发生错误").build();
+    public static RpcResponse success(Object data, String message) {
+        return RpcResponse.builder().code(200).message(message).data(data).dataType(data.getClass()).build();
+    }
+
+    public static RpcResponse fail(int code) {
+        return RpcResponse.builder().code(code).build();
+    }
+
+    public static RpcResponse fail(int code, String message) {
+        return RpcResponse.builder().code(code).message(message).build();
+    }
+
+    public static RpcResponse retryable() {
+        return RpcResponse.builder().code(503).build();
+    }
+
+    public static RpcResponse retryable(String message) {
+        return RpcResponse.builder().code(503).message(message).build();
     }
 }

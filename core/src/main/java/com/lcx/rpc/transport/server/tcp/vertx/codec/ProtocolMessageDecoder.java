@@ -21,26 +21,34 @@ public class ProtocolMessageDecoder {
      * @return 消息
      */
     public static ProtocolMessage<?> decode(Buffer buffer) throws IOException {
-        int magic = buffer.getInt(0);
+        short magic = buffer.getShort(0);
         // 校验魔数
         if (magic != ProtocolConstant.PROTOCOL_MAGIC) {
             throw new RuntimeException("消息 magic 非法");
         }
+
+        byte version = buffer.getByte(2);
+        short headerLength = buffer.getByte(3);
+        byte state = buffer.getByte(5);
+        byte messageType = (byte) (state >> 4);    // 高四位
+        byte serializerId = (byte) (state & 0x0f); // 低四位
+
         // 解析请求头
         ProtocolMessage.Header header = ProtocolMessage.Header.builder()
                 .magicNum(magic)
-                .version(buffer.getByte(1))
-                .serializerId(buffer.getByte(2))
-                .messageType(buffer.getByte(3))
-                .requestId(buffer.getLong(5))
-                .bodyLength(buffer.getInt(13))
+                .version(version)
+                .headerLength(headerLength)
+                .messageType(messageType)
+                .serializerId(serializerId)
+                .requestId(buffer.getLong(6))
+                .bodyLength(buffer.getInt(14))
                 .build();
 
         // 反序列化
-        byte[] bodyBytes = buffer.getBytes(17, 17 + header.getBodyLength());
+        byte[] bodyBytes = buffer.getBytes(18, 18 + header.getBodyLength());
         // 获取序列化器
         ProtocolMessageSerializerEnum serializerEnum = ProtocolMessageSerializerEnum.getByKey(header.getSerializerId());
-        if(serializerEnum == null) {
+        if (serializerEnum == null) {
             throw new RuntimeException("序列化消息的协议不存在");
         }
         Serializer serializer = SerializerFactory.getSerializer(serializerEnum.getValue());
