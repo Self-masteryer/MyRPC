@@ -17,7 +17,6 @@ public class ProviderApplication {
         ServiceRegisterInfo serviceRegisterInfo = ServiceRegisterInfo.builder()
                 .serviceName(IUserService.class.getName())
                 .implClass(UserServiceImpl.class)
-                .canRetry(false)
                 .build();
         serviceRegisterInfoList.add(serviceRegisterInfo);
 

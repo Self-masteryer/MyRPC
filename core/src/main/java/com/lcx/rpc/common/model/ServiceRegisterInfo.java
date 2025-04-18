@@ -24,10 +24,4 @@ public class ServiceRegisterInfo {
      */
     private Class<?> implClass;
 
-    /**
-     * 能否重试：接口是否具备幂等性
-     */
-    @Builder.Default
-    private Boolean canRetry = false;
-
 }

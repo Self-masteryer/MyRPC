@@ -1,12 +1,12 @@
 package com.lcx.rpc.common.model;
 
-import cn.hutool.core.util.StrUtil;
 import com.lcx.rpc.bootstrap.config.MyRpcApplication;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
 import java.util.Objects;
 
 @Data
@@ -44,9 +44,15 @@ public class ServiceMetaInfo {
      */
     @Builder.Default
     private Integer weight = 1;
-
+    /**
+     * 是否都幂等
+     */
     @Builder.Default
-    private Boolean canRetry = false;
+    private Boolean idempotent = false;
+    /**
+     * 细粒度幂等性标注
+     */
+    private Map<String, Boolean> idempotentMap;
 
     /**
      * 获取服务键
@@ -67,6 +73,15 @@ public class ServiceMetaInfo {
      */
     public String getServiceAddress() {
         return String.format("%s:%s", host, port);
+    }
+
+    /**
+     * 方法是否可重试
+     * @param methodName 方法名称
+     * @return 是否可重试
+     */
+    public boolean retryable(String methodName) {
+        return idempotent || idempotentMap.getOrDefault(methodName, false);
     }
 
     @Override

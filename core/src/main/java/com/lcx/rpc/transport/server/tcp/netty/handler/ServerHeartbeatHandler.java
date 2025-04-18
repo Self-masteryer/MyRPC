@@ -29,7 +29,7 @@ public class ServerHeartbeatHandler extends ChannelDuplexHandler {
                 ctx.close(); // 关闭连接
             }
         } catch (Exception e) {
-            log.error("处理事件发生异常" + e);
+            log.error("处理事件发生异常{}", e);
         }
     }
 }
