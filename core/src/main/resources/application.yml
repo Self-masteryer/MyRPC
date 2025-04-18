@@ -11,7 +11,7 @@ myRPC:
       timeout: 5000
       leaseTime: 30
     loadBalancer: consistentHash
-    retryStrategy: no
+    retryStrategy: exponentialBackoff
     tolerantStrategy: failFast
   protocol:
     serializer: kryo

@@ -13,10 +13,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * 固定时间间隔-重试策略
+ * 指数退避-重试策略
  */
 @Slf4j
-public class FixedIntervalRetryStrategy implements RetryStrategy {
+public class ExponentialBackoffRetryStrategy implements RetryStrategy {
 
     @Override
     public RpcResponse doRetry(Callable<RpcResponse> callable) {
