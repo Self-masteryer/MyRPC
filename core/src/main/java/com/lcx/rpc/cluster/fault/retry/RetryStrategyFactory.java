@@ -15,7 +15,7 @@ public class RetryStrategyFactory {
     /**
      * 配置的重试策略
      */
-    public static final RetryStrategy retryStrategy = getRetryStrategy(MyRpcApplication.getRpcConfig().getCluster().getRetryStrategy());
+    public static final RetryStrategy retryStrategy = getRetryStrategy(MyRpcApplication.getRpcConfig().getCluster().getRetry().getStrategy());
 
     /**
      * 获取重试策略

@@ -1,5 +1,6 @@
 package com.lcx.rpc.springboot.starter.bootstrap;
 
+import com.lcx.rpc.bootstrap.config.MyRpcApplication;
 import com.lcx.rpc.bootstrap.proxy.ServiceProxyFactory;
 import com.lcx.rpc.springboot.starter.annotation.RpcReference;
 import org.springframework.beans.BeansException;
@@ -20,7 +21,9 @@ public class RpcConsumerBootStrap implements BeanPostProcessor {
                 Class<?> interfaceClass = rpcReference.interfaceClass();
                 if (interfaceClass == void.class) interfaceClass = field.getType();
                 field.setAccessible(true);
-                Object proxy = ServiceProxyFactory.getProxy(interfaceClass);
+                long globalTimeout = rpcReference.globalTimeout();
+                if (globalTimeout == 0) globalTimeout = MyRpcApplication.getRpcConfig().getCluster().getRetry().getGlobalTimeout();
+                Object proxy = ServiceProxyFactory.getProxy(interfaceClass, globalTimeout);
                 try {
                     field.set(bean, proxy);
                     field.setAccessible(false);

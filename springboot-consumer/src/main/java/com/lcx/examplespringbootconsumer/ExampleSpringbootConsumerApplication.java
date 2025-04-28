@@ -1,10 +1,10 @@
 package com.lcx.examplespringbootconsumer;
 
-import com.lcx.rpc.springboot.starter.annotation.EnableRpc;
+import com.lcx.rpc.springboot.starter.annotation.EnableMyRpc;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@EnableRpc(needServer = false)
+@EnableMyRpc(needServer = false)
 @SpringBootApplication
 public class ExampleSpringbootConsumerApplication {
 

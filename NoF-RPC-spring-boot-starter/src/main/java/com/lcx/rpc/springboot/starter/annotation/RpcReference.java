@@ -35,6 +35,11 @@ public @interface RpcReference {
     String retryStrategy() default RetryStrategyKeys.NO;
 
     /**
+     * 全局超时时间
+     */
+    long globalTimeout() default 0;
+
+    /**
      * 容错策略
      */
     String tolerantStrategy() default TolerantStrategyKeys.FAIL_FAST;

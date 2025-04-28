@@ -1,6 +1,5 @@
 package com.lcx.rpc.bootstrap.config;
 
-import com.lcx.rpc.cluster.fault.retry.RetryStrategyKeys;
 import com.lcx.rpc.cluster.fault.tolerant.TolerantStrategyKeys;
 import com.lcx.rpc.cluster.loadbalancer.LoadBalancerKeys;
 import lombok.Data;
@@ -20,11 +19,12 @@ public class ClusterConfig {
      */
     private String loadBalancer = LoadBalancerKeys.ROUND_ROBIN;
     /**
-     * 重试策略
+     * 异常重试
      */
-    private String retryStrategy = RetryStrategyKeys.NO;
+    private RetryConfig retry = new RetryConfig();
     /**
      * 容错策略
      */
     private String tolerantStrategy = TolerantStrategyKeys.FAIL_BACK;
+
 }

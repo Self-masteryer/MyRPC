@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ExampleServiceImpl implements IExampleService {
 
-    @RpcReference
+    @RpcReference()
     private IUserService userService;
 
     public void test() {

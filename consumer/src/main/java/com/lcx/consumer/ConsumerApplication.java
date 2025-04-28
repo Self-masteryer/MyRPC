@@ -13,15 +13,16 @@ import java.util.concurrent.TimeUnit;
 public class ConsumerApplication {
 
     public static void main(String[] args) {
-        test();
+        ConsumerBootStrap.init();
+        IUserService userService = ServiceProxyFactory.getProxy(IUserService.class, 10000);
+        userService.getUserById(0);
     }
 
     public static void test() {
-        ConsumerBootStrap.init();
         int success = 0, failure = 0;
         ThreadLocalRandom threadLocalRandom = ThreadLocalRandom.current();
         // 动态代理
-        IUserService userService = ServiceProxyFactory.getProxy(IUserService.class);
+        IUserService userService = ServiceProxyFactory.getProxy(IUserService.class, 10000);
         for (int i = 0; i < 100; i++) {
             // 调用服务
             try {
